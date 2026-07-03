@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creation | Manih Jewelz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Google Sign-In SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <!-- Row 1: Main Brand & Top Actions -->
+    <div class="header-top-row">
+      <div class="header-menu-toggle">
+        <button id="mobile-menu-btn" class="nav-icon-btn" aria-label="Toggle Navigation Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <a href="index.html" class="header-brand-logo">
+        <img src="assets/logo.png" class="logo-blended-img" alt="Manih Jewelz Logo">
+      </a>
+      
+      <div class="header-top-actions">
+        <button id="search-toggle-btn" class="nav-icon-btn" aria-label="Open Search" title="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+        <button id="user-toggle-btn" class="nav-icon-btn" aria-label="Open Customer Account" title="My Account">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+        <button id="wishlist-toggle-btn" class="nav-icon-btn" aria-label="Open Wishlist">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          <span id="wishlist-count-badge" class="wishlist-badge">0</span>
+        </button>
+        <button id="cart-toggle-btn" class="nav-icon-btn" aria-label="Open Cart">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span id="cart-count-badge" class="cart-badge">0</span>
+        </button>
+      </div>
+
+    </div>
+
+
+  </header>
+
+
+  <!-- Main Product Details Container -->
+  <main class="product-detail-page-container" style="margin-top: 85px; background-color: var(--white-pure); border-bottom: 1px solid var(--border-rose);">
+    <div class="section-container" id="product-detail-container">
+      <!-- Loaded dynamically via app.js -->
+      <div class="loading-spinner-container" style="padding: 10rem 0;">
+        <div class="spinner"></div>
+        <p>Loading creation details...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Cart Drawer -->
+  <div id="cart-drawer" class="cart-drawer">
+    <div class="cart-drawer-overlay"></div>
+    <div class="cart-drawer-content">
+      <div class="cart-drawer-header">
+        <h3>YOUR BAG</h3>
+        <button id="cart-close-btn" class="close-btn" aria-label="Close Cart"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div id="cart-items-container" class="cart-items-container">
+        <!-- Loaded via JS -->
+      </div>
+
+      <div id="cart-empty-state" class="cart-empty-state hidden">
+        <i class="fa-solid fa-bag-shopping empty-icon"></i>
+        <p class="empty-text">Your shopping bag is currently empty.</p>
+        <button id="cart-shop-btn" class="btn btn-primary">Browse</button>
+      </div>
+
+      <div id="cart-footer" class="cart-footer">
+        <div class="cart-totals">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="cart-subtotal-amount">₹0.00</span>
+        </div>
+        <button id="checkout-btn" class="btn btn-primary btn-block">Proceed to Checkout</button>
+        <p style="font-size: 0.68rem; color: var(--text-secondary); text-align: center; margin-top: 0.6rem; font-family: var(--font-body); letter-spacing: 0.3px;">* Flat shipping fee of ₹50.00 will be added at checkout</p>
+      </div>
+
+      <!-- Checkout Form -->
+      <div id="checkout-form-container" class="checkout-form-container hidden">
+        <div class="checkout-header">
+          <button id="back-to-cart-btn" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Bag</button>
+          <h4>Secure Payment</h4>
+        </div>
+
+        <form id="payment-form" class="payment-form">
+          <div class="form-section">
+            <h5>1. Shipping Details</h5>
+            <div class="form-group">
+              <input type="text" id="checkout-name" placeholder="Full Name" required>
+            </div>
+            <div class="form-group">
+              <input type="email" id="checkout-email" placeholder="Email Address" required>
+            </div>
+            <div class="form-group">
+              <input type="tel" id="checkout-phone" placeholder="10-Digit Mobile Number" required pattern="[0-9]{10}" title="Please enter a 10-digit mobile number">
+            </div>
+            <div class="form-group">
+              <textarea id="checkout-address" placeholder="Shipping Address (Flat, Street, Area, City, State)" required rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <input type="text" id="checkout-pincode" placeholder="6-Digit Pin Code" required pattern="[0-9]{6}" title="Please enter a 6-digit pin code">
+            </div>
+          </div>
+
+          <div class="form-section razorpay-note-section">
+            <h5>2. Payment Method</h5>
+            <div class="gateway-sandbox-note" style="margin-top: 0.5rem; background-color: #fcf8f5; border: 1px solid var(--border-rose); color: var(--text-secondary); display: flex; gap: 0.5rem; align-items: flex-start; padding: 1rem;">
+              <i class="fa-solid fa-shield-halved" style="color: var(--bg-maroon); margin-top: 0.2rem;"></i>
+              <span>Payments are processed securely via <strong>Razorpay</strong>. UPI, Cards, Netbanking, and Wallets are supported.</span>
+            </div>
+            <!-- Hidden inputs to maintain compatibility with legacy scripts -->
+            <input type="hidden" id="card-number" value="1111222233334444">
+            <input type="hidden" id="card-expiry" value="12/30">
+            <input type="hidden" id="card-cvv" value="123">
+          </div>
+
+          <div class="checkout-summary-block" style="border-top: 1px solid var(--border-rose); margin-top: 1rem; padding-top: 1rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-family: var(--font-body);">
+              <span>Subtotal:</span>
+              <span id="checkout-subtotal-val">₹0.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-family: var(--font-body);">
+              <span>Delivery Charge:</span>
+              <span>₹50.00</span>
+            </div>
+            <div class="checkout-summary-row" style="display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: bold; color: var(--bg-maroon); font-family: var(--font-body);">
+              <span>Amount Due:</span>
+              <strong id="checkout-total-val">₹0.00</strong>
+            </div>
+          </div>
+
+          <button type="submit" id="submit-payment-btn" class="btn btn-primary btn-block">
+            <span id="payment-btn-text">Authorize & Pay</span>
+            <span id="payment-btn-spinner" class="spinner-small hidden"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist Drawer -->
+  <div id="wishlist-drawer" class="cart-drawer">
+    <div class="wishlist-drawer-overlay cart-drawer-overlay"></div>
+    <div class="cart-drawer-content">
+      <div class="cart-drawer-header">
+        <h3>YOUR WISHLIST</h3>
+        <button id="wishlist-close-btn" class="close-btn" aria-label="Close Wishlist"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div id="wishlist-items-container" class="cart-items-container">
+        <!-- Loaded via JS -->
+      </div>
+
+      <div id="wishlist-empty-state" class="cart-empty-state hidden">
+        <i class="fa-regular fa-heart empty-icon" style="color: var(--border-rose)"></i>
+        <p class="empty-text">Your wishlist is currently empty.</p>
+        <button id="wishlist-shop-btn" class="btn btn-primary">Browse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-menu-drawer" class="cart-drawer mobile-menu-drawer">
+    <div class="mobile-menu-overlay cart-drawer-overlay"></div>
+    <div class="cart-drawer-content">
+      <div class="cart-drawer-header">
+        <h3>MANIH JEWELZ MENU</h3>
+        <button id="mobile-menu-close-btn" class="close-btn" aria-label="Close Menu"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="mobile-menu-links">
+        <a href="index.html" class="menu-link"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="shop.html" class="menu-link">Shop All</a>
+        <hr class="menu-divider">
+        <span class="menu-section-title">Collections</span>
+        
+        <!-- Collapsible Earrings Menu -->
+        <div class="menu-dropdown-container">
+          <button class="menu-link dropdown-toggle-btn" aria-expanded="false" type="button" style="display: flex; justify-content: space-between; width: 100%; align-items: center; border: none; background: none; font-family: inherit; font-size: inherit; color: inherit; cursor: pointer; text-align: left; padding: 0.8rem 0;">
+            <span>Earrings</span>
+            <i class="fa-solid fa-chevron-down arrow-icon" style="font-size: 0.75rem; transition: transform 0.3s ease;"></i>
+          </button>
+          <div class="menu-dropdown-sublinks" style="display: none; flex-direction: column; padding-left: 2rem; border-left: 2px solid var(--rose-gold-warm); margin-bottom: 0.5rem; background-color: rgba(91, 0, 18, 0.02);">
+            <a href="shop.html?category=Earrings" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">All Earrings</a>
+            <a href="shop.html?category=Antitarnish" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Antitarnish</a>
+            <a href="shop.html?category=Ethnic" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Ethnic</a>
+            <a href="shop.html?category=Earcuff" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Earcuff</a>
+            <a href="shop.html?category=Kashmiri Earrings" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Kashmiri Earrings</a>
+            <a href="shop.html?category=Meenakari Jhumkas" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Meenakari Jhumkas</a>
+          </div>
+        </div>
+
+        <a href="shop.html?category=Neckchain" class="menu-link">Neckchain</a>
+        <a href="shop.html?category=Bracelets" class="menu-link">Bracelets</a>
+        <a href="shop.html?category=Kada" class="menu-link">Kada</a>
+        <a href="shop.html?category=Bangles" class="menu-link">Bangles</a>
+        <a href="shop.html?category=Cuff" class="menu-link">Cuff</a>
+        <a href="shop.html?category=Anklets" class="menu-link">Anklets</a>
+        <a href="shop.html?category=Ring" class="menu-link">Ring</a>
+        <a href="shop.html?category=Tiara" class="menu-link">Tiara</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Account Drawer -->
+  <div id="user-drawer" class="cart-drawer">
+    <div class="user-drawer-overlay cart-drawer-overlay"></div>
+    <div class="cart-drawer-content">
+      <div class="cart-drawer-header">
+        <h3 id="user-drawer-title">LOGIN</h3>
+        <button id="user-close-btn" class="close-btn" aria-label="Close Account Panel"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <!-- Logged Out State (Login / Signup) -->
+      <div id="user-logged-out-state" class="user-drawer-section">
+        
+        <!-- Google OAuth Library Config -->
+        <div id="g_id_onload"
+             data-client_id="557238318852-2r77j956la2arjb1uc0nl1982ad7qbrs.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleGoogleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+
+        <!-- Log In View -->
+        <div id="user-login-view">
+          <div id="login-error-message" class="hidden" style="color: #d9534f; background-color: #fdf7f7; border: 1px solid #d9534f; padding: 0.8rem; font-size: 0.75rem; margin-bottom: 1rem; font-family: var(--font-body);"></div>
+          <form id="user-login-form" class="payment-form">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <input type="email" id="login-email" placeholder="Email Address" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); font-family: var(--font-body); font-size: 0.8rem;">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.5rem;">
+              <input type="password" id="login-password" placeholder="Password" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); font-family: var(--font-body); font-size: 0.8rem;">
+            </div>
+            <a href="#" id="forgot-password-link" style="font-size: 0.75rem; color: var(--bg-maroon); text-decoration: none; display: block; text-align: right; margin-bottom: 1.2rem; font-family: var(--font-body);">Forgot Password?</a>
+            
+            <button type="submit" class="btn btn-primary btn-block" style="padding: 0.8rem;">Access Account</button>
+          </form>
+
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; margin-bottom: 1rem;">
+            <div style="flex: 1; height: 1px; background-color: #ddd;"></div>
+            <span style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">or</span>
+            <div style="flex: 1; height: 1px; background-color: #ddd;"></div>
+          </div>
+          <div class="g-signin-container" style="display: flex; justify-content: center; margin-bottom: 1rem;">
+            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" style="width: 100%;"></div>
+          </div>
+
+          <p style="text-align: center; margin-top: 1.2rem; font-size: 0.8rem; color: var(--text-secondary);">
+            Don't have an account? <a href="#" id="go-to-signup-btn" style="color: var(--bg-maroon); font-weight: 600; text-decoration: none;">Sign Up</a>
+          </p>
+          <p style="text-align: center; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-secondary);">
+            Ordered as guest? <a href="#" class="go-to-track-btn" style="color: var(--bg-maroon); font-weight: 600; text-decoration: none;">Track Order</a>
+          </p>
+        </div>
+
+        <!-- Sign Up View -->
+        <div id="user-signup-view" class="hidden">
+          <div id="signup-error-message" class="hidden" style="color: #d9534f; background-color: #fdf7f7; border: 1px solid #d9534f; padding: 0.8rem; font-size: 0.75rem; margin-bottom: 1rem; font-family: var(--font-body);"></div>
+          <form id="user-signup-form" class="payment-form">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <input type="text" id="signup-name" placeholder="Full Name" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); font-family: var(--font-body); font-size: 0.8rem;">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <input type="email" id="signup-email" placeholder="Email Address" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); font-family: var(--font-body); font-size: 0.8rem;">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <input type="password" id="signup-password" placeholder="Password" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); font-family: var(--font-body); font-size: 0.8rem;">
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <input type="tel" id="signup-phone" placeholder="Phone Number (Optional)" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); font-family: var(--font-body); font-size: 0.8rem;">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="padding: 0.8rem;">Create Account</button>
+          </form>
+
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; margin-bottom: 1rem;">
+            <div style="flex: 1; height: 1px; background-color: #ddd;"></div>
+            <span style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">or</span>
+            <div style="flex: 1; height: 1px; background-color: #ddd;"></div>
+          </div>
+          <div class="g-signin-container" style="display: flex; justify-content: center; margin-bottom: 1rem;">
+            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signup_with" data-size="large" data-logo_alignment="left" style="width: 100%;"></div>
+          </div>
+
+          <p style="text-align: center; margin-top: 1.2rem; font-size: 0.8rem; color: var(--text-secondary);">
+            Already have an account? <a href="#" id="go-to-login-btn" style="color: var(--bg-maroon); font-weight: 600; text-decoration: none;">Log In</a>
+          </p>
+          <p style="text-align: center; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-secondary);">
+            Ordered as guest? <a href="#" class="go-to-track-btn" style="color: var(--bg-maroon); font-weight: 600; text-decoration: none;">Track Order</a>
+          </p>
+        </div>
+
+        <!-- Forgot Password View -->
+        <div id="user-forgot-view" class="hidden">
+          <div id="forgot-error-message" class="hidden" style="color: #d9534f; background-color: #fdf7f7; border: 1px solid #d9534f; padding: 0.8rem; font-size: 0.75rem; margin-bottom: 1rem; font-family: var(--font-body);"></div>
+          <div id="forgot-success-message" class="hidden" style="color: #3c763d; background-color: #dff0d8; border: 1px solid #d6e9c6; padding: 0.8rem; font-size: 0.75rem; margin-bottom: 1rem; font-family: var(--font-body);"></div>
+          
+          <form id="user-forgot-form" class="payment-form">
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <input type="email" id="forgot-email" placeholder="Email Address" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); font-family: var(--font-body); font-size: 0.8rem;">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="padding: 0.8rem;">Send Reset Link</button>
+          </form>
+          <p style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-secondary);">
+            Remembered password? <a href="#" id="forgot-back-to-login-btn" style="color: var(--bg-maroon); font-weight: 600; text-decoration: none;">Log In</a>
+          </p>
+        </div>
+
+        <!-- Track Guest Order View -->
+        <div id="user-track-view" class="hidden">
+          <div id="track-error-message" class="hidden" style="color: #d9534f; background-color: #fdf7f7; border: 1px solid #d9534f; padding: 0.8rem; font-size: 0.75rem; margin-bottom: 1rem; font-family: var(--font-body);"></div>
+          <form id="user-track-form" class="payment-form">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <input type="email" id="track-email" placeholder="Email Address" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); font-family: var(--font-body); font-size: 0.8rem;">
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <input type="text" id="track-order-id" placeholder="Order Reference (e.g. 3)" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); font-family: var(--font-body); font-size: 0.8rem;">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="padding: 0.8rem;">Find Order</button>
+          </form>
+          
+          <!-- Track Results Container -->
+          <div id="track-results-container" class="hidden" style="margin-top: 1.5rem;">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <p style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-secondary);">
+            Back to <a href="#" id="track-back-to-login-btn" style="color: var(--bg-maroon); font-weight: 600; text-decoration: none;">Log In</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Logged In State (Dashboard) -->
+      <div id="user-logged-in-state" class="user-drawer-section hidden">
+        <div class="user-profile-header" style="text-align: center; padding: 1.5rem 0 1rem;">
+          <div class="user-avatar-circle" style="width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--rose-gold); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; color: var(--bg-maroon); background-color: var(--cream-ivory);">
+            <i class="fa-regular fa-user"></i>
+          </div>
+          <h4 id="user-welcome-name" style="font-family: var(--font-display); font-size: 1.1rem; color: var(--bg-maroon); margin-bottom: 0.25rem;">Hi, Guest</h4>
+          <span id="user-profile-email" style="font-size: 0.75rem; color: var(--text-muted);">email@example.com</span>
+        </div>
+        
+        <hr class="divider">
+        
+        <h5 class="user-orders-title" style="font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 1px; color: var(--bg-maroon); margin-bottom: 1rem; text-transform: uppercase;">Your Order History</h5>
+        <div id="user-orders-container" class="user-orders-container" style="max-height: 280px; overflow-y: auto; padding-right: 0.3rem;">
+          <!-- Loaded dynamically from SQLite -->
+        </div>
+        
+        <button id="user-logout-btn" class="btn btn-secondary btn-block" style="margin-top: 2rem; padding: 0.8rem;">Log Out</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Order Success Receipt Modal -->
+  <div id="receipt-modal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content receipt-modal-content">
+      <div class="receipt-card">
+        <div class="receipt-success-badge"><i class="fa-solid fa-circle-check"></i></div>
+        <h3 class="receipt-title">Order Placed</h3>
+        <p class="receipt-subtitle">Transaction committed inside the SQLite database.</p>
+        <hr class="divider">
+        <div id="receipt-details" class="receipt-details"></div>
+        <hr class="divider">
+        <div class="receipt-database-notice">
+          <i class="fa-solid fa-circle-info"></i>
+          <p>Your order has been recorded successfully. You can track this order and view your past purchases inside your <strong>Customer Account Panel</strong>.</p>
+        </div>
+        <button id="receipt-done-btn" class="btn btn-primary btn-block">Return to Store</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer" style="background-color: var(--bg-maroon); color: #fff; border-top: 1px solid var(--rose-gold); padding: 2.5rem 0;">
+    <div class="footer-container-small" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.5rem;">
+      
+      <!-- Logo area -->
+      <div style="display: flex; align-items: center; gap: 0.65rem;">
+        <div class="logo-crop-wrapper" style="width:30px; height:30px;">
+          <img src="assets/logo.png" class="logo-cropped-img" alt="Manih Jewelz Logo">
+        </div>
+        <h3 style="color: #fff; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 2px; margin: 0;">MANIH JEWELZ</h3>
+      </div>
+
+      <!-- Contact Info Section -->
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; font-size: 0.8rem; font-family: var(--font-body); color: rgba(255,255,255,0.85);">
+        <span><i class="fa-solid fa-location-dot" style="margin-right: 0.4rem; color: var(--rose-gold);"></i> Near Post Office, Valiyapoyil, Cheruvathur Via, Kasaragod Dist, Kerala, 671313</span>
+        <span><i class="fa-solid fa-envelope" style="margin-right: 0.4rem; color: var(--rose-gold);"></i> contact@manihjewelz.com</span>
+        <span><i class="fa-solid fa-phone" style="margin-right: 0.4rem; color: var(--rose-gold);"></i> +91 79943 49552</span>
+      </div>
+
+      <!-- Policy Links -->
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.2rem; font-size: 0.75rem; font-family: var(--font-body);">
+        <a href="policies.html?tab=shipping" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Shipping Policy</a>
+        <span style="color: rgba(255,255,255,0.3)">|</span>
+        <a href="policies.html?tab=refunds" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Return & Refund Policy</a>
+        <span style="color: rgba(255,255,255,0.3)">|</span>
+        <a href="policies.html?tab=privacy" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Privacy Policy</a>
+        <span style="color: rgba(255,255,255,0.3)">|</span>
+        <a href="policies.html?tab=terms" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Terms of Service</a>
+        <span style="color: rgba(255,255,255,0.3)">|</span>
+        <a href="policies.html?tab=contact" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Contact Us</a>
+      </div>
+
+      <!-- Divider line -->
+      <div style="width: 100%; height: 1px; background-color: rgba(255,255,255,0.1); margin: 0.5rem 0;"></div>
+
+      <!-- Copyright Area -->
+      <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5); font-family: var(--font-body);">
+        &copy; 2026 Manih Jewelz. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Search Overlay -->
+  <div id="search-overlay" class="search-overlay">
+    <div class="search-overlay-overlay"></div>
+    <div class="search-overlay-content">
+      <button id="search-overlay-close" class="search-overlay-close-btn" aria-label="Close Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2 class="search-overlay-title">Search products</h2>
+      <div class="search-overlay-field">
+        <input type="text" id="overlay-search-input" placeholder="Search products..." autocomplete="off">
+        <button id="overlay-search-submit-btn" class="overlay-search-submit-btn" aria-label="Submit Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

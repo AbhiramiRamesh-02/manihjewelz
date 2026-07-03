@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policies & Compliance | Manih Jewelz</title>
+  <meta name="description" content="Read our Shipping & Delivery Policy, Return & Refund Policy, Privacy Policy, and Terms of Service.">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <style>
+    .policy-tab-btn {
+      background: none;
+      border: none;
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .policy-tab-btn:hover {
+      background-color: var(--cream-ivory);
+      color: var(--bg-maroon);
+    }
+    .policy-tab-btn.active {
+      background-color: var(--bg-maroon);
+      color: var(--white-pure);
+      font-weight: 600;
+    }
+    .policy-panel {
+      display: none;
+    }
+    .policy-panel.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    .policy-panel p {
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 1.2rem;
+      font-size: 0.95rem;
+    }
+    .policy-panel ul {
+      color: var(--text-secondary);
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .policy-panel li {
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="header-top-row">
+      <div class="header-menu-toggle">
+        <button id="mobile-menu-btn" class="nav-icon-btn" aria-label="Toggle Navigation Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <a href="index.html" class="header-brand-logo">
+        <img src="assets/logo.png" class="logo-blended-img" alt="Manih Jewelz Logo">
+      </a>
+      
+      <div class="header-top-actions">
+        <button id="search-toggle-btn" class="nav-icon-btn" aria-label="Open Search" title="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+        <button id="user-toggle-btn" class="nav-icon-btn" aria-label="Open Customer Account" title="My Account">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+        <button id="wishlist-toggle-btn" class="nav-icon-btn" aria-label="Open Wishlist">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          <span id="wishlist-count-badge" class="wishlist-badge">0</span>
+        </button>
+        <button id="cart-toggle-btn" class="nav-icon-btn" aria-label="Open Cart">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span id="cart-count-badge" class="cart-badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section class="page-title-section" style="background-color: var(--cream-ivory); padding: 3rem 0; text-align: center; border-bottom: 1px solid var(--border-rose);">
+    <div class="section-container">
+      <h1 style="font-family: var(--font-display); color: var(--bg-maroon); font-size: 2.2rem; margin-bottom: 0.5rem;">Policies & Compliance</h1>
+      <p style="font-family: var(--font-body); color: var(--text-secondary); font-size: 0.9rem;">Terms, policies, and details regarding your purchases from Manih Jewelz</p>
+    </div>
+  </section>
+
+  <!-- Tab Content Section -->
+  <section class="policies-section" style="padding: 4rem 0; background-color: var(--white-pure);">
+    <div class="section-container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; gap: 3rem; flex-wrap: wrap;">
+      
+      <!-- Sidebar Nav -->
+      <div class="policies-sidebar" style="flex: 1 1 250px; display: flex; flex-direction: column; gap: 0.5rem; border-right: 1px solid var(--border-rose); padding-right: 1.5rem;">
+        <button class="policy-tab-btn active" data-tab="shipping">Shipping & Delivery <i class="fa-solid fa-chevron-right"></i></button>
+        <button class="policy-tab-btn" data-tab="refunds">Return & Refund Policy <i class="fa-solid fa-chevron-right"></i></button>
+        <button class="policy-tab-btn" data-tab="privacy">Privacy Policy <i class="fa-solid fa-chevron-right"></i></button>
+        <button class="policy-tab-btn" data-tab="terms">Terms of Service <i class="fa-solid fa-chevron-right"></i></button>
+        <button class="policy-tab-btn" data-tab="contact">Contact Us <i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+      
+      <!-- Content Panel -->
+      <div class="policies-content" style="flex: 3 3 600px; min-width: 300px;">
+        
+        <!-- Panel 1: Shipping -->
+        <div class="policy-panel active" id="panel-shipping">
+          <h2 style="font-family: var(--font-display); color: var(--bg-maroon); margin-bottom: 1.5rem;">Shipping Policy</h2>
+          <p>Thank you for shopping with us! We are committed to ensuring your order reaches you safely and as quickly as possible.</p>
+          <hr style="border: 0; border-top: 1px solid var(--border-rose); margin: 1.5rem 0;">
+          
+          <h4 style="margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Order Processing</h4>
+          <ul>
+            <li>All orders are processed within <strong>1–3 business days</strong> after successful payment confirmation.</li>
+            <li>Orders placed on Sundays or public holidays will be processed on the next business day.</li>
+            <li>Once your order is packed and handed over to our courier partner, you will receive a shipping confirmation along with your tracking details.</li>
+          </ul>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Shipping Charges</h4>
+          <ul>
+            <li>A <strong>flat shipping fee of ₹50</strong> is applicable on <strong>all orders</strong> across India.</li>
+            <li>The shipping charge will be displayed at checkout before you complete your purchase.</li>
+          </ul>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Estimated Delivery Time</h4>
+          <p>Estimated delivery times are as follows:</p>
+          <ul>
+            <li><strong>Metro Cities:</strong> 2–5 business days</li>
+            <li><strong>Other Cities & Towns:</strong> 4–8 business days</li>
+            <li><strong>Remote Locations:</strong> 5–10 business days</li>
+          </ul>
+          <p>Please note that these are estimated delivery timelines and may vary due to courier delays, weather conditions, festivals, or other unforeseen circumstances.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Order Tracking</h4>
+          <p>Once your order has been shipped, you will receive a tracking link or tracking number via email or WhatsApp (if provided), allowing you to monitor your shipment's progress.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Delivery Address</h4>
+          <p>Please ensure that your shipping address, contact number, and other details are accurate when placing your order. We are not responsible for delays or failed deliveries caused by incorrect or incomplete information provided by the customer.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Failed Delivery Attempts</h4>
+          <p>If the courier is unable to deliver your order due to an incorrect address, customer unavailability, or refusal to accept the package, the order may be returned to us. Re-shipping charges may apply if the order needs to be sent again.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Damaged or Lost Packages</h4>
+          <p>If your package arrives damaged or appears to be lost in transit, please contact us within <strong>48 hours</strong> of the delivery date. Kindly include your order number and clear photos of the package (if damaged). We will work with our courier partner to resolve the issue as quickly as possible.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Delays Beyond Our Control</h4>
+          <p>While we strive to deliver all orders on time, delays caused by courier partners, natural disasters, strikes, public holidays, weather conditions, or other unforeseen events are beyond our control. We appreciate your patience and understanding in such situations.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Contact Us</h4>
+          <p>If you have any questions regarding your order or shipping, please feel free to contact our customer support team through our website or email. We will be happy to assist you.</p>
+        </div>
+        
+        <!-- Panel 2: Refunds -->
+        <div class="policy-panel" id="panel-refunds">
+          <h2 style="font-family: var(--font-display); color: var(--bg-maroon); margin-bottom: 1.5rem;">Return & Refund Policy</h2>
+          <p>Thank you for shopping with us. We take great care in packaging every order to ensure it reaches you in perfect condition.</p>
+          <hr style="border: 0; border-top: 1px solid var(--border-rose); margin: 1.5rem 0;">
+          
+          <h4 style="margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Returns</h4>
+          <p>We accept returns <strong>only if the product is received damaged</strong>.</p>
+          <p>Returns will <strong>not</strong> be accepted for:</p>
+          <ul>
+            <li>Change of mind</li>
+            <li>Incorrect product selection by the customer</li>
+            <li>Personal preferences (such as size, color, or design expectations)</li>
+            <li>Normal wear and tear after use</li>
+          </ul>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Reporting a Damaged Product</h4>
+          <p>If you receive a damaged product, you must contact us within <strong>48 hours of delivery</strong>.</p>
+          <p>To be eligible for a return and refund, you must provide:</p>
+          <ul>
+            <li>Your order number.</li>
+            <li>A clear <strong>unboxing video</strong> showing the sealed package being opened from the beginning.</li>
+            <li>Clear photos of the damaged product.</li>
+          </ul>
+          <p><strong>Important:</strong> The unboxing video must be continuous, unedited, and recorded from the moment the sealed package is opened. Claims made without a valid unboxing video may not be eligible for return or refund.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Return Approval</h4>
+          <p>Once we review the evidence provided, we will notify you whether your return request has been approved.</p>
+          <p>If approved:</p>
+          <ul>
+            <li>We will arrange a return pickup (where service is available) or provide return instructions.</li>
+            <li>The product must be unused and returned with its original packaging and all accessories (if any).</li>
+          </ul>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Refunds</h4>
+          <p>Once the returned product is received and inspected, your refund will be processed.</p>
+          <p>Approved refunds will be credited to your <strong>original payment method</strong> within <strong>5–7 business days</strong> after the refund is initiated. The exact time for the amount to reflect in your account may vary depending on your bank or payment provider.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Non-Refundable Cases</h4>
+          <p>Refunds will not be provided if:</p>
+          <ul>
+            <li>The product is not damaged.</li>
+            <li>The damage occurred after delivery due to misuse or improper handling.</li>
+            <li>The request is made after 48 hours of delivery.</li>
+            <li>A valid unboxing video and supporting photos are not provided.</li>
+            <li>The returned product is found to have been used, altered, or damaged after delivery.</li>
+          </ul>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Contact Us</h4>
+          <p>If you have any questions regarding returns or refunds, please contact our customer support team through our website or email. We are happy to assist you.</p>
+        </div>
+        
+        <!-- Panel 3: Privacy -->
+        <div class="policy-panel" id="panel-privacy">
+          <h2 style="font-family: var(--font-display); color: var(--bg-maroon); margin-bottom: 1.5rem;">Privacy Policy</h2>
+          <p>Your privacy is important to us. This policy details how we collect, protect, and use your personal information:</p>
+          <hr style="border: 0; border-top: 1px solid var(--border-rose); margin: 1.5rem 0;">
+          
+          <h4 style="margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Information Collection</h4>
+          <p>We collect personal information that you provide to us directly during checkout, registration, or form submission. This includes your name, email address, telephone number, shipping address, and billing details.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Information Usage</h4>
+          <p>We use your information solely to process and ship your orders, communicate updates regarding your purchases, provide support, and optimize your browsing experience on our platform.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Payment Security</h4>
+          <p>All online payments are processed securely via <strong>Razorpay</strong>. We do not store or capture your credit card details, UPI credentials, or bank passwords on our servers.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Third-Party Sharing</h4>
+          <p>We do not sell, trade, or rent your personal information to third parties. We only share shipping data with trusted logistics partners to facilitate order delivery.</p>
+        </div>
+        
+        <!-- Panel 4: Terms -->
+        <div class="policy-panel" id="panel-terms">
+          <h2 style="font-family: var(--font-display); color: var(--bg-maroon); margin-bottom: 1.5rem;">Terms of Service</h2>
+          <p>Welcome to Manih Jewelz. By accessing this website, you agree to be bound by these Terms of Service:</p>
+          <hr style="border: 0; border-top: 1px solid var(--border-rose); margin: 1.5rem 0;">
+          
+          <h4 style="margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Usage Agreement</h4>
+          <p>By purchasing from Manih Jewelz, you warrant that you are legally capable of entering into binding contracts and that the information provided during checkout is accurate.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Pricing & Stock Accuracy</h4>
+          <p>We make every effort to display accurate product images, prices, and stock statuses. However, we reserve the right to cancel any orders and issue full refunds if there is an inventory discrepancy or pricing error.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Care Instructions & Liability</h4>
+          <p>All items sold are fashion/artificial jewelry. To maintain their luster, please follow standard care instructions: keep them away from water, sweat, perfumes, and chemical sprays. Manih Jewelz is not liable for discoloration caused by improper handling.</p>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Governing Law</h4>
+          <p>These terms are governed by and construed in accordance with the laws of India. Any disputes arising out of your purchase will be subject to the exclusive jurisdiction of the courts of Kasaragod, Kerala, India.</p>
+        </div>
+        
+        <!-- Panel 5: Contact -->
+        <div class="policy-panel" id="panel-contact">
+          <h2 style="font-family: var(--font-display); color: var(--bg-maroon); margin-bottom: 1.5rem;">Contact Us</h2>
+          <p>For any queries, support, or compliance requests, please reach out to us using the details below:</p>
+          <hr style="border: 0; border-top: 1px solid var(--border-rose); margin: 1.5rem 0;">
+          
+          <h4 style="margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Business Registration Details</h4>
+          <ul>
+            <li><strong>Legal Entity Name:</strong> Manih Jewelz</li>
+            <li><strong>Support Email:</strong> manihjewelz@gmail.com</li>
+            <li><strong>Support Telephone:</strong> +91 79943 49552</li>
+            <li><strong>Support Timing:</strong> Monday to Saturday, 10:00 AM - 7:00 PM IST</li>
+            <li><strong>Registered Address:</strong> Near Post Office, Valiyapoyil, Cheruvathur Via, Kasaragod Dist, Kerala, 671313</li>
+          </ul>
+          
+          <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--bg-maroon); font-family: var(--font-display);">Response Timeline</h4>
+          <p>We aim to respond to all customer inquiries, complaints, or return requests within <strong>24 to 48 hours</strong>.</p>
+        </div>
+        
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer" style="background-color: var(--bg-maroon); color: #fff; border-top: 1px solid var(--rose-gold); padding: 2.5rem 0;">
+    <div class="footer-container-small" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.5rem;">
+      
+      <!-- Logo area -->
+      <div style="display: flex; align-items: center; gap: 0.65rem;">
+        <div class="logo-crop-wrapper" style="width:30px; height:30px;">
+          <img src="assets/logo.png" class="logo-cropped-img" alt="Manih Jewelz Logo">
+        </div>
+        <h3 style="color: #fff; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 2px; margin: 0;">MANIH JEWELZ</h3>
+      </div>
+
+      <!-- Contact Info Section -->
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; font-size: 0.8rem; font-family: var(--font-body); color: rgba(255,255,255,0.85);">
+        <span><i class="fa-solid fa-location-dot" style="margin-right: 0.4rem; color: var(--rose-gold);"></i> Near Post Office, Valiyapoyil, Cheruvathur Via, Kasaragod Dist, Kerala, 671313</span>
+        <span><i class="fa-solid fa-envelope" style="margin-right: 0.4rem; color: var(--rose-gold);"></i> contact@manihjewelz.com</span>
+        <span><i class="fa-solid fa-phone" style="margin-right: 0.4rem; color: var(--rose-gold);"></i> +91 79943 49552</span>
+      </div>
+
+      <!-- Policy Links -->
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.2rem; font-size: 0.75rem; font-family: var(--font-body);">
+        <a href="policies.html?tab=shipping" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Shipping Policy</a>
+        <span style="color: rgba(255,255,255,0.3)">|</span>
+        <a href="policies.html?tab=refunds" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Return & Refund Policy</a>
+        <span style="color: rgba(255,255,255,0.3)">|</span>
+        <a href="policies.html?tab=privacy" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Privacy Policy</a>
+        <span style="color: rgba(255,255,255,0.3)">|</span>
+        <a href="policies.html?tab=terms" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Terms of Service</a>
+        <span style="color: rgba(255,255,255,0.3)">|</span>
+        <a href="policies.html?tab=contact" style="color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Contact Us</a>
+      </div>
+
+      <!-- Divider line -->
+      <div style="width: 100%; height: 1px; background-color: rgba(255,255,255,0.1); margin: 0.5rem 0;"></div>
+
+      <!-- Copyright Area -->
+      <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5); font-family: var(--font-body);">
+        &copy; 2026 Manih Jewelz. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Search Overlay -->
+  <div id="search-overlay" class="search-overlay">
+    <div class="search-overlay-overlay"></div>
+    <div class="search-overlay-content">
+      <button id="search-overlay-close" class="search-overlay-close-btn" aria-label="Close Search">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="search-overlay-field">
+        <input type="text" id="overlay-search-input" placeholder="Search products..." autocomplete="off">
+        <button id="overlay-search-submit-btn" class="overlay-search-submit-btn" aria-label="Submit Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer, Wishlist Drawer & Auth Drawer elements generated dynamically via app.js -->
+  <div id="cart-drawer" class="cart-drawer">
+    <div class="cart-drawer-overlay"></div>
+    <div class="cart-drawer-content">
+      <div class="cart-drawer-header">
+        <h3>YOUR BAG</h3>
+        <button id="cart-close-btn" class="close-btn" aria-label="Close Cart"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="cart-items-container" class="cart-items-container"></div>
+      <div id="cart-empty-state" class="cart-empty-state hidden">
+        <i class="fa-solid fa-bag-shopping empty-icon"></i>
+        <p class="empty-text">Your shopping bag is currently empty.</p>
+        <button id="cart-shop-btn" class="btn btn-primary">Browse</button>
+      </div>
+      <div id="cart-footer" class="cart-footer">
+        <div class="cart-totals">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="cart-subtotal-amount">₹0.00</span>
+        </div>
+        <button id="checkout-btn" class="btn btn-primary btn-block">Proceed to Checkout</button>
+        <p style="font-size: 0.68rem; color: var(--text-secondary); text-align: center; margin-top: 0.6rem; font-family: var(--font-body); letter-spacing: 0.3px;">* Flat shipping fee of ₹50.00 will be added at checkout</p>
+      </div>
+      <div id="checkout-form-container" class="checkout-form-container hidden">
+        <div class="checkout-header">
+          <button id="back-to-cart-btn" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Bag</button>
+          <h4>Secure Payment</h4>
+        </div>
+        <form id="payment-form" class="payment-form">
+          <div class="form-section">
+            <h5>1. Shipping Details</h5>
+            <div class="form-group">
+              <input type="text" id="checkout-name" placeholder="Full Name" required>
+            </div>
+            <div class="form-group">
+              <input type="email" id="checkout-email" placeholder="Email Address" required>
+            </div>
+            <div class="form-group">
+              <input type="tel" id="checkout-phone" placeholder="10-Digit Mobile Number" required pattern="[0-9]{10}" title="Please enter a 10-digit mobile number">
+            </div>
+            <div class="form-group">
+              <textarea id="checkout-address" placeholder="Shipping Address (Flat, Street, Area, City, State)" required rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <input type="text" id="checkout-pincode" placeholder="6-Digit Pin Code" required pattern="[0-9]{6}" title="Please enter a 6-digit pin code">
+            </div>
+          </div>
+          <div class="form-section razorpay-note-section">
+            <h5>2. Payment Method</h5>
+            <div class="gateway-sandbox-note" style="margin-top: 0.5rem; background-color: #fcf8f5; border: 1px solid var(--border-rose); color: var(--text-secondary); display: flex; gap: 0.5rem; align-items: flex-start; padding: 1rem;">
+              <i class="fa-solid fa-shield-halved" style="color: var(--bg-maroon); margin-top: 0.2rem;"></i>
+              <span>Payments are processed securely via <strong>Razorpay</strong>. UPI, Cards, Netbanking, and Wallets are supported.</span>
+            </div>
+            <input type="hidden" id="card-number" value="1111222233334444">
+            <input type="hidden" id="card-expiry" value="12/30">
+            <input type="hidden" id="card-cvv" value="123">
+          </div>
+          <div class="checkout-summary-block" style="border-top: 1px solid var(--border-rose); margin-top: 1rem; padding-top: 1rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-family: var(--font-body);">
+              <span>Subtotal:</span>
+              <span id="checkout-subtotal-val">₹0.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-family: var(--font-body);">
+              <span>Delivery Charge:</span>
+              <span>₹50.00</span>
+            </div>
+            <div class="checkout-summary-row" style="display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: bold; color: var(--bg-maroon); font-family: var(--font-body);">
+              <span>Amount Due:</span>
+              <strong id="checkout-total-val">₹0.00</strong>
+            </div>
+          </div>
+          <button type="submit" id="submit-payment-btn" class="btn btn-primary btn-block">
+            <span id="payment-btn-text">Place Order & Pay</span>
+            <span id="payment-btn-spinner" class="spinner-small hidden"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="wishlist-drawer" class="cart-drawer">
+    <div class="wishlist-drawer-overlay cart-drawer-overlay"></div>
+    <div class="cart-drawer-content">
+      <div class="cart-drawer-header">
+        <h3>YOUR WISHLIST</h3>
+        <button id="wishlist-close-btn" class="close-btn" aria-label="Close Wishlist"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="wishlist-items-container" class="cart-items-container"></div>
+      <div id="wishlist-empty-state" class="cart-empty-state hidden">
+        <i class="fa-regular fa-heart empty-icon" style="color: var(--border-rose)"></i>
+        <p class="empty-text">Your wishlist is currently empty.</p>
+        <button id="wishlist-shop-btn" class="btn btn-primary">Browse</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu-drawer" class="cart-drawer mobile-menu-drawer">
+    <div class="mobile-menu-overlay cart-drawer-overlay"></div>
+    <div class="cart-drawer-content">
+      <div class="cart-drawer-header">
+        <h3>MANIH JEWELZ MENU</h3>
+        <button id="mobile-menu-close-btn" class="close-btn" aria-label="Close Menu"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="mobile-menu-links">
+        <a href="index.html" class="menu-link"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="shop.html" class="menu-link">Shop All</a>
+        <hr class="menu-divider">
+        <span class="menu-section-title">Collections</span>
+        <div class="menu-dropdown-container">
+          <button class="menu-link dropdown-toggle-btn" aria-expanded="false" type="button" style="display: flex; justify-content: space-between; width: 100%; align-items: center; border: none; background: none; font-family: inherit; font-size: inherit; color: inherit; cursor: pointer; text-align: left; padding: 0.8rem 0;">
+            <span>Earrings</span>
+            <i class="fa-solid fa-chevron-down arrow-icon" style="font-size: 0.75rem; transition: transform 0.3s ease;"></i>
+          </button>
+          <div class="menu-dropdown-sublinks" style="display: none; flex-direction: column; padding-left: 2rem; border-left: 2px solid var(--rose-gold-warm); margin-bottom: 0.5rem; background-color: rgba(91, 0, 18, 0.02);">
+            <a href="shop.html?category=Earrings" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">All Earrings</a>
+            <a href="shop.html?category=Antitarnish" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Antitarnish</a>
+            <a href="shop.html?category=Ethnic" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Ethnic</a>
+            <a href="shop.html?category=Earcuff" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Earcuff</a>
+            <a href="shop.html?category=Kashmiri Earrings" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Kashmiri Earrings</a>
+            <a href="shop.html?category=Meenakari Jhumkas" class="menu-sublink" style="display: block; padding: 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">Meenakari Jhumkas</a>
+          </div>
+        </div>
+        <a href="shop.html?category=Neckchain" class="menu-link">Neckchain</a>
+        <a href="shop.html?category=Bracelets" class="menu-link">Bracelets</a>
+        <a href="shop.html?category=Kada" class="menu-link">Kada</a>
+        <a href="shop.html?category=Tiara" class="menu-link">Tiara</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="customer-account-drawer" class="cart-drawer">
+    <div class="customer-account-overlay cart-drawer-overlay"></div>
+    <div class="cart-drawer-content">
+      <div class="cart-drawer-header">
+        <h3 id="customer-drawer-title">CUSTOMER LOGIN</h3>
+        <button id="customer-close-btn" class="close-btn" aria-label="Close Panel"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="customer-drawer-body" class="cart-items-container" style="padding: 2rem;">
+        <div id="user-logged-out-state">
+          <form id="user-login-form" class="payment-form">
+            <div class="form-group"><input type="email" id="login-email" placeholder="Email Address" required></div>
+            <div class="form-group"><input type="password" id="login-password" placeholder="Password" required></div>
+            <p id="user-login-error" class="login-error hidden" style="margin-bottom: 1rem;"></p>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-secondary);">New? <a href="#" id="go-to-signup" style="color: var(--bg-maroon); font-weight: 600;">Create Account</a></p>
+          </form>
+          <form id="user-signup-form" class="payment-form hidden">
+            <div class="form-group"><input type="text" id="signup-name" placeholder="Full Name" required></div>
+            <div class="form-group"><input type="email" id="signup-email" placeholder="Email Address" required></div>
+            <div class="form-group"><input type="password" id="signup-password" placeholder="Password" required></div>
+            <div class="form-group"><input type="text" id="signup-phone" placeholder="Phone Number (Optional)"></div>
+            <p id="user-signup-error" class="login-error hidden" style="margin-bottom: 1rem;"></p>
+            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-secondary);">Have an account? <a href="#" id="go-to-login" style="color: var(--bg-maroon); font-weight: 600;">Sign In</a></p>
+          </form>
+        </div>
+        <div id="user-logged-in-state" class="hidden">
+          <h4 style="margin-bottom: 0.5rem;">Hello, <span id="customer-profile-name">Client</span></h4>
+          <p id="customer-profile-email" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2rem;"></p>
+          <h5 style="margin-bottom: 1rem;">YOUR RECENT ORDERS</h5>
+          <div id="customer-orders-list" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+          <button id="user-logout-btn" class="btn btn-secondary btn-block" style="margin-top: 2rem;">Log Out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="app.js"></script>
+
+  <!-- Page Tab Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabBtns = document.querySelectorAll('.policy-tab-btn');
+      const panels = document.querySelectorAll('.policy-panel');
+
+      function activateTab(tabId) {
+        tabBtns.forEach(btn => {
+          if (btn.getAttribute('data-tab') === tabId) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        panels.forEach(panel => {
+          if (panel.id === `panel-${tabId}`) {
+            panel.classList.add('active');
+          } else {
+            panel.classList.remove('active');
+          }
+        });
+      }
+
+      // Check URL query parameters
+      const params = new URLSearchParams(window.location.search);
+      const initialTab = params.get('tab') || 'shipping';
+      activateTab(initialTab);
+
+      // Add click event listeners
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.getAttribute('data-tab');
+          activateTab(tabId);
+          // Update URL without reloading page
+          const newUrl = `${window.location.pathname}?tab=${tabId}`;
+          window.history.pushState({ path: newUrl }, '', newUrl);
+        });
+      });
+
+      // Handle browser back/forward buttons
+      window.addEventListener('popstate', () => {
+        const currentParams = new URLSearchParams(window.location.search);
+        const currentTab = currentParams.get('tab') || 'shipping';
+        activateTab(currentTab);
+      });
+    });
+  </script>
+</body>
+</html>

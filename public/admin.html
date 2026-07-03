@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manih Jewelz Console | Manih Jewelz Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-maroon: #5B0012;
+      --bg-dark-maroon: #3c000b;
+      --rose-gold: #D4A373;
+      --rose-gold-light: #e5c4a3;
+      --cream-ivory: #FAF7F2;
+      --black: #111111;
+      
+      --border-rose: rgba(212, 163, 115, 0.25);
+      --border-white: rgba(255, 255, 255, 0.08);
+      --border-dark: rgba(0, 0, 0, 0.08);
+      
+      --font-display: 'Cinzel', serif;
+      --font-body: 'Montserrat', sans-serif;
+      --transition-smooth: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--cream-ivory);
+      color: var(--black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--cream-ivory);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--rose-gold);
+      border-radius: 3px;
+    }
+
+    /* Header */
+    .admin-header {
+      background-color: var(--bg-maroon);
+      color: #fff;
+      border-bottom: 1px solid var(--rose-gold);
+      padding: 1.2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(91, 0, 18, 0.15);
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 3px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .brand-logo-circle {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      border: 1px solid var(--rose-gold);
+      background-image: url('assets/logo.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .brand-title span {
+      color: var(--rose-gold);
+      font-weight: bold;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .console-indicator {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background-color: rgba(255,255,255,0.1);
+      padding: 0.4rem 1rem;
+      border: 1px dashed var(--rose-gold);
+      color: var(--rose-gold-light);
+    }
+
+    .btn-logout {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-weight: 600;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-logout:hover {
+      border-color: var(--rose-gold);
+      background-color: var(--rose-gold);
+      color: #000;
+    }
+
+    /* Login Screen */
+    .login-container {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, var(--cream-ivory) 0%, #ebe7df 100%);
+    }
+
+    .login-card {
+      background-color: #fff;
+      border: 1px solid var(--border-rose);
+      width: 100%;
+      max-width: 400px;
+      padding: 3rem;
+      box-shadow: 0 15px 35px rgba(91, 0, 18, 0.08);
+      text-align: center;
+    }
+
+    .login-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 1px solid var(--rose-gold);
+      margin: 0 auto 1.5rem;
+      background-image: url('assets/logo.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .login-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--bg-maroon);
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
+
+    .login-subtitle {
+      font-size: 0.75rem;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 2.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      text-align: left;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--black);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      background-color: var(--cream-ivory);
+      border: 1px solid var(--border-rose);
+      padding: 0.8rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--black);
+      transition: var(--transition-smooth);
+    }
+
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--bg-maroon);
+      box-shadow: 0 0 10px rgba(91, 0, 18, 0.05);
+    }
+
+    .btn-login {
+      width: 100%;
+      background-color: var(--bg-maroon);
+      color: #fff;
+      border: 1px solid var(--bg-maroon);
+      padding: 0.95rem 2rem;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-login:hover {
+      background-color: transparent;
+      color: var(--bg-maroon);
+      border-color: var(--bg-maroon);
+    }
+
+    .login-error {
+      color: #c92a2a;
+      font-size: 0.75rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    /* Admin Dashboard Area */
+    .dashboard-container {
+      display: none;
+      flex-grow: 1;
+      padding: 3rem;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Overview Cards */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .overview-card {
+      background-color: #fff;
+      border: 1px solid var(--border-rose);
+      padding: 1.75rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .overview-info h4 {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #777;
+      margin-bottom: 0.5rem;
+    }
+
+    .overview-info p {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--bg-maroon);
+    }
+
+    .overview-icon {
+      font-size: 2rem;
+      color: var(--rose-gold);
+      opacity: 0.8;
+    }
+
+    /* Tabs Layout */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .admin-sidebar {
+      background-color: #fff;
+      border: 1px solid var(--border-rose);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+
+    .sidebar-btn {
+      background: none;
+      border: none;
+      border-left: 3px solid transparent;
+      padding: 1.1rem 1.5rem;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #555;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      transition: var(--transition-smooth);
+    }
+
+    .sidebar-btn:hover {
+      color: var(--bg-maroon);
+      background-color: rgba(91,0,18,0.02);
+    }
+
+    .sidebar-btn.active {
+      color: var(--bg-maroon);
+      background-color: rgba(91,0,18,0.04);
+      border-left-color: var(--bg-maroon);
+      font-weight: 600;
+    }
+
+    /* Panels */
+    .dashboard-panel {
+      background-color: #fff;
+      border: 1px solid var(--border-rose);
+      padding: 2.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      min-height: 500px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--cream-ivory);
+      padding-bottom: 1rem;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      color: var(--bg-maroon);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Buttons */
+    .btn-action {
+      background-color: var(--bg-maroon);
+      color: #fff;
+      border: 1px solid var(--bg-maroon);
+      padding: 0.6rem 1.5rem;
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-action:hover {
+      background-color: transparent;
+      color: var(--bg-maroon);
+    }
+
+    .btn-outline-action {
+      background: none;
+      border: 1px solid var(--border-rose);
+      color: var(--black);
+      padding: 0.4rem 1rem;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-outline-action:hover {
+      border-color: var(--bg-maroon);
+      color: var(--bg-maroon);
+    }
+
+    .btn-danger {
+      border-color: #c92a2a;
+      color: #c92a2a;
+    }
+    .btn-danger:hover {
+      background-color: #c92a2a;
+      color: #fff;
+      border-color: #c92a2a;
+    }
+
+    /* Tables */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: left;
+    }
+
+    .data-table th {
+      background-color: var(--cream-ivory);
+      color: var(--bg-maroon);
+      font-family: var(--font-body);
+      font-weight: 700;
+      padding: 1rem;
+      border-bottom: 2px solid var(--border-rose);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.75rem;
+    }
+
+    .data-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--cream-ivory);
+      vertical-align: middle;
+    }
+
+    .data-table tr:hover {
+      background-color: rgba(0,0,0,0.01);
+    }
+
+    .table-prod-img {
+      width: 45px;
+      height: 45px;
+      background-color: var(--cream-ivory);
+      border: 1px solid var(--border-rose);
+      overflow: hidden;
+    }
+
+    .table-prod-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .tag {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag-category {
+      background-color: #f1f3f5;
+      color: #495057;
+    }
+
+    .tag-paid {
+      background-color: rgba(15, 139, 90, 0.1);
+      color: #0f8b5a;
+    }
+
+    .tag-success {
+      background-color: rgba(15, 139, 90, 0.15);
+      color: #0f8b5a;
+    }
+
+    .tag-shipped {
+      background-color: rgba(0, 123, 255, 0.1);
+      color: #007bff;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Modal / Drawer */
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -550px;
+      width: 100%;
+      max-width: 500px;
+      height: 100%;
+      background-color: #fff;
+      border-left: 1px solid var(--border-rose);
+      box-shadow: -10px 0 30px rgba(0,0,0,0.08);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition-smooth);
+    }
+
+    .drawer.active {
+      right: 0;
+    }
+
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1999;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition-smooth);
+    }
+
+    .drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--cream-ivory);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--bg-maroon);
+      letter-spacing: 1.5px;
+    }
+
+    .drawer-close {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: #777;
+    }
+
+    .drawer-body {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .form-half {
+      flex: 1;
+    }
+
+    /* Footer */
+    .admin-footer {
+      border-top: 1px solid var(--border-rose);
+      background-color: #fff;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #777;
+      margin-top: auto;
+    }
+
+    .admin-footer a {
+      color: var(--bg-maroon);
+      font-weight: 600;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Navigation Header -->
+  <header class="admin-header">
+    <div class="brand-title">
+      <div class="brand-logo-circle"></div>
+      MANIH JEWELZ <span>MANIH JEWELZ</span>
+    </div>
+    <div class="nav-actions">
+      <div class="console-indicator"><i class="fa-solid fa-server"></i> SQL DB CONNECTED</div>
+      <button id="logout-btn" class="btn-logout" style="display: none;"><i class="fa-solid fa-power-off"></i> Logout</button>
+    </div>
+  </header>
+
+  <!-- Login Overlay Screen -->
+  <main id="login-screen" class="login-screen login-container">
+    <div class="login-card">
+      <div class="login-logo"></div>
+      <h1 class="login-title">Manih Jewelz Console</h1>
+      <p class="login-subtitle">Database Access Credentials</p>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label for="admin-password">Enter Password</label>
+          <input type="password" id="admin-password" placeholder="••••••••" required>
+        </div>
+        <p class="form-group" style="font-size:0.65rem; color:#888; background:#fbfbfb; border:1px dashed #ddd; padding:0.6rem;">
+          <i class="fa-solid fa-shield-halved"></i> Demonstration Mode Password: <strong><code>manih2026</code></strong>
+        </p>
+        <button type="submit" class="btn-login">Unlock Console</button>
+        <p id="login-error" class="login-error">Incorrect password. Please try again.</p>
+      </form>
+    </div>
+  </main>
+
+  <!-- Authenticated Admin Dashboard -->
+  <main id="admin-dashboard" class="dashboard-container">
+    
+    <!-- Overview Analytics Row -->
+    <section class="overview-grid">
+      <div class="overview-card">
+        <div class="overview-info">
+          <h4>Total Revenue</h4>
+          <p id="stat-revenue">RS 0.00</p>
+        </div>
+        <i class="fa-solid fa-indian-rupee-sign overview-icon"></i>
+      </div>
+      <div class="overview-card">
+        <div class="overview-info">
+          <h4>Completed Orders</h4>
+          <p id="stat-orders">0</p>
+        </div>
+        <i class="fa-solid fa-cart-check overview-icon"></i>
+      </div>
+      <div class="overview-card">
+        <div class="overview-info">
+          <h4>Products in DB</h4>
+          <p id="stat-products">0</p>
+        </div>
+        <i class="fa-solid fa-boxes-packing overview-icon"></i>
+      </div>
+      <div class="overview-card">
+        <div class="overview-info">
+          <h4>Gateway Transactions</h4>
+          <p id="stat-transactions">0</p>
+        </div>
+        <i class="fa-solid fa-credit-card overview-icon"></i>
+      </div>
+    </section>
+
+    <!-- Main Workspace Layout -->
+    <div class="dashboard-layout">
+      <!-- Sidebar Menu -->
+      <aside class="admin-sidebar">
+        <button class="sidebar-btn active" data-target="panel-products">
+          <i class="fa-solid fa-gem"></i> Manage Products
+        </button>
+        <button class="sidebar-btn" data-target="panel-orders">
+          <i class="fa-solid fa-shopping-bag"></i> Customer Orders
+        </button>
+        <button class="sidebar-btn" data-target="panel-transactions">
+          <i class="fa-solid fa-receipt"></i> Payment Gateway
+        </button>
+        <button class="sidebar-btn" data-target="panel-banners">
+          <i class="fa-solid fa-images"></i> Manage Banners
+        </button>
+        <button class="sidebar-btn" data-target="panel-heritage">
+          <i class="fa-solid fa-scroll"></i> Our Story
+        </button>
+        <button class="sidebar-btn" data-target="panel-homepage-reviews">
+          <i class="fa-solid fa-comment-dots"></i> Customer Reviews
+        </button>
+        <button class="sidebar-btn" data-target="panel-instagram">
+          <i class="fa-brands fa-instagram"></i> Instagram Feed
+        </button>
+        <button class="sidebar-btn" data-target="panel-restock">
+          <i class="fa-solid fa-bell"></i> Restock Requests
+        </button>
+      </aside>
+
+      <!-- Panel Area -->
+      <section class="panel-content">
+        
+        <!-- PRODUCTS PANEL -->
+        <div class="dashboard-panel" id="panel-products">
+          <div class="panel-header">
+            <h2 class="panel-title">Store Inventory</h2>
+            <button id="add-product-btn" class="btn-action"><i class="fa-solid fa-plus"></i> Add Creation</button>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Original Price</th>
+                  <th>Discount Price</th>
+                  <th>Stock</th>
+                  <th style="width: 150px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-products-tbody">
+                <!-- Loaded Dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ORDERS PANEL -->
+        <div class="dashboard-panel" id="panel-orders" style="display: none;">
+          <div class="panel-header">
+            <h2 class="panel-title">Customer Orders</h2>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer Info</th>
+                  <th>Items Purchased</th>
+                  <th>Shipping Address</th>
+                  <th>Total Paid</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-tbody">
+                <!-- Loaded Dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TRANSACTIONS PANEL -->
+        <div class="dashboard-panel" id="panel-transactions" style="display: none;">
+          <div class="panel-header">
+            <h2 class="panel-title">Gateway Transactions</h2>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Ref ID</th>
+                  <th>Order</th>
+                  <th>Amount</th>
+                  <th>Card Method</th>
+                  <th>Status</th>
+                  <th>Provider</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="admin-transactions-tbody">
+                <!-- Loaded Dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- BANNERS PANEL -->
+        <div class="dashboard-panel" id="panel-banners" style="display: none;">
+          <div class="panel-header">
+            <h2 class="panel-title">Home Page Banners</h2>
+            <button id="add-banner-btn" class="btn-action"><i class="fa-solid fa-plus"></i> Add Banner</button>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Preview</th>
+                  <th>Title</th>
+                  <th>Description / Subtitle</th>
+                  <th>Button Link</th>
+                  <th style="width: 150px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-banners-tbody">
+                <!-- Loaded Dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- HERITAGE PANEL -->
+        <div class="dashboard-panel" id="panel-heritage" style="display: none;">
+          <div class="panel-header">
+            <h2 class="panel-title">Our Story (Heritage)</h2>
+          </div>
+          <form id="heritage-form">
+            <div class="form-group">
+              <label for="form-heritage-subtitle">Subtitle</label>
+              <input type="text" id="form-heritage-subtitle" placeholder="e.g. CRAFTING STORIES" required>
+            </div>
+            <div class="form-group">
+              <label for="form-heritage-title">Title</label>
+              <input type="text" id="form-heritage-title" placeholder="e.g. Affordable Luxury, Uncompromised." required>
+            </div>
+            <div class="form-group">
+              <label for="form-heritage-desc1">Description Paragraph 1</label>
+              <textarea id="form-heritage-desc1" rows="4" placeholder="First paragraph..." required style="width: 100%; background-color: var(--cream-ivory); border: 1px solid var(--border-rose); padding: 0.8rem 1rem; font-family: var(--font-body); font-size: 0.85rem; color: var(--black);"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="form-heritage-desc2">Description Paragraph 2</label>
+              <textarea id="form-heritage-desc2" rows="4" placeholder="Second paragraph..." required style="width: 100%; background-color: var(--cream-ivory); border: 1px solid var(--border-rose); padding: 0.8rem 1rem; font-family: var(--font-body); font-size: 0.85rem; color: var(--black);"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="form-heritage-image">Image URL / Path</label>
+              <input type="text" id="form-heritage-image" placeholder="e.g. assets/logo.png" required>
+            </div>
+            <button type="submit" class="btn-action"><i class="fa-solid fa-floppy-disk"></i> Save Settings</button>
+          </form>
+        </div>
+
+        <!-- HOMEPAGE REVIEWS PANEL -->
+        <div class="dashboard-panel" id="panel-homepage-reviews" style="display: none;">
+          <div class="panel-header">
+            <h2 class="panel-title">Customer Reviews (Homepage)</h2>
+            <button id="add-homepage-review-btn" class="btn-action"><i class="fa-solid fa-plus"></i> Add Testimonial</button>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Rating</th>
+                  <th>Reviewer</th>
+                  <th>Location</th>
+                  <th>Content</th>
+                  <th style="width: 150px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-homepage-reviews-tbody">
+                <!-- Loaded Dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- INSTAGRAM FEED PANEL -->
+        <div class="dashboard-panel" id="panel-instagram" style="display: none;">
+          <div class="panel-header">
+            <h2 class="panel-title">Instagram Feed Grid</h2>
+            <button id="add-instagram-btn" class="btn-action"><i class="fa-solid fa-plus"></i> Add Instagram Post</button>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Preview</th>
+                  <th>Image Path</th>
+                  <th>Post Link</th>
+                  <th style="width: 150px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-instagram-tbody">
+                <!-- Loaded Dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RESTOCK REQUESTS PANEL -->
+        <div class="dashboard-panel" id="panel-restock" style="display: none;">
+          <div class="panel-header">
+            <h2 class="panel-title">Restock Notification Requests</h2>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Product ID</th>
+                  <th>Product Name</th>
+                  <th>Customer Name</th>
+                  <th>Customer Email</th>
+                  <th>Request Date</th>
+                </tr>
+              </thead>
+              <tbody id="admin-restock-tbody">
+                <!-- Loaded Dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- Side Drawer Form for Add/Edit Product -->
+  <div id="drawer-overlay" class="drawer-overlay"></div>
+  <div id="product-drawer" class="drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title" id="drawer-title-text">Add New Creation</h3>
+      <button id="drawer-close-btn" class="drawer-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    
+    <form id="product-form" class="drawer-body">
+      <input type="hidden" id="form-product-id">
+      
+      <div class="form-group" id="form-code-group" style="display: none; margin-bottom: 1rem;">
+        <label>Product Code</label>
+        <div id="form-product-code" style="padding: 0.8rem; background: var(--cream-ivory); border: 1px solid var(--border-rose); font-family: monospace; font-size: 0.9rem; font-weight: bold; color: var(--bg-maroon);"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="form-name">Product Name</label>
+        <input type="text" id="form-name" placeholder="e.g. Kundan Lotus Jhumkas" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group form-half">
+          <label for="form-category">Category</label>
+          <select id="form-category" required>
+            <option value="Earrings">Earrings</option>
+            <option value="Antitarnish">Antitarnish</option>
+            <option value="Ethnic">Ethnic</option>
+            <option value="Earcuff">Earcuff</option>
+            <option value="Kashmiri Earrings">Kashmiri Earrings</option>
+            <option value="Meenakari Jhumkas">Meenakari Jhumkas</option>
+            <option value="Neckchain">Neckchain</option>
+            <option value="Bracelets">Bracelets</option>
+            <option value="Kada">Kada</option>
+            <option value="Bangles">Bangles</option>
+            <option value="Cuff">Cuff</option>
+            <option value="Anklets">Anklets</option>
+            <option value="Ring">Ring</option>
+            <option value="Tiara">Tiara</option>
+          </select>
+        </div>
+        <div class="form-group form-half">
+          <label for="form-price">Base Price (RS)</label>
+          <input type="number" id="form-price" step="any" placeholder="e.g. 1450" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group form-half">
+          <label for="form-discount-price">Discount Price (RS - Optional)</label>
+          <input type="number" id="form-discount-price" step="any" placeholder="e.g. 1290">
+        </div>
+        <div class="form-group form-half">
+          <label for="form-metal-variant-type">Metal Variants (Polish)</label>
+          <select id="form-metal-variant-type" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); background: var(--cream-ivory); font-family: var(--font-body); font-size: 0.85rem;">
+            <option value="none">None (No Variants)</option>
+            <option value="both">Both Golden & Silver</option>
+            <option value="golden">Golden Only</option>
+            <option value="silver">Silver Only</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="stock-inputs-container">
+        <!-- Main Stock (Visible for None) -->
+        <div class="form-group" id="group-main-stock">
+          <label for="form-stock">Initial Stock</label>
+          <input type="number" id="form-stock" placeholder="e.g. 8">
+        </div>
+
+        <!-- Variant Stocks (Visible/Hidden dynamically) -->
+        <div class="form-row" id="group-variant-stocks" style="display: none; gap: 1rem; margin-bottom: 1rem;">
+          <div class="form-group form-half" id="group-gold-stock" style="margin-bottom: 0;">
+            <label for="form-gold-stock">Golden Polish Stock</label>
+            <input type="number" id="form-gold-stock" placeholder="e.g. 5">
+          </div>
+          <div class="form-group form-half" id="group-silver-stock" style="margin-bottom: 0;">
+            <label for="form-silver-stock">Silver Polish Stock</label>
+            <input type="number" id="form-silver-stock" placeholder="e.g. 5">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--black); margin-bottom: 0.5rem;">
+          Product Images Gallery
+        </label>
+        <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom: 0.5rem;">
+          <button type="button" id="btn-add-image-path" class="btn-outline-action" style="padding:0.25rem 0.6rem; font-size:0.6rem;">+ Add URL</button>
+          <label class="btn-outline-action" style="padding:0.25rem 0.6rem; font-size:0.6rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload File
+            <input type="file" id="image-file-input" accept="image/*" style="display: none;">
+          </label>
+          <span id="upload-status" style="font-size: 0.65rem; color: #888; display: none;">Uploading...</span>
+        </div>
+        <div id="image-paths-container" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
+          <!-- inputs dynamically added here -->
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="form-desc">Artistic Description</label>
+        <textarea id="form-desc" rows="3" placeholder="Describe the creation's design, style, and allure..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Product Specifications (Select features to display on storefront)</label>
+        <div class="specs-checkbox-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 0.5rem; background: #fcf8f5; border: 1px solid var(--border-rose); padding: 1rem;">
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-weight:normal; cursor:pointer; color: var(--black);">
+            <input type="checkbox" value="Anti-Tarnish" class="spec-checkbox"> Anti-Tarnish
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-weight:normal; cursor:pointer; color: var(--black);">
+            <input type="checkbox" value="Daily Wear" class="spec-checkbox"> Daily Wear
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-weight:normal; cursor:pointer; color: var(--black);">
+            <input type="checkbox" value="18k Gold Plated" class="spec-checkbox"> 18k Gold Plated
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-weight:normal; cursor:pointer; color: var(--black);">
+            <input type="checkbox" value="Hypoallergenic" class="spec-checkbox"> Hypoallergenic
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-weight:normal; cursor:pointer; color: var(--black);">
+            <input type="checkbox" value="Stainless Steel" class="spec-checkbox"> Stainless Steel
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-weight:normal; cursor:pointer; color: var(--black);">
+            <input type="checkbox" value="Brass" class="spec-checkbox"> Brass
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-weight:normal; cursor:pointer; color: var(--black);">
+            <input type="checkbox" value="Acrylic Coating" class="spec-checkbox"> Acrylic Coating
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-weight:normal; cursor:pointer; color: var(--black);">
+            <input type="checkbox" value="Pearl" class="spec-checkbox"> Pearl
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; font-weight:normal; cursor:pointer; color: var(--black);">
+            <input type="checkbox" value="Semi-precious Stone" class="spec-checkbox"> Semi-precious Stone
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" style="margin-top: 1rem;" id="form-submit-btn">Save Product</button>
+    </form>
+  </div>
+
+  <!-- Side Drawer Form for Add/Edit Banner -->
+  <div id="banner-drawer" class="drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title" id="banner-drawer-title-text">Add Home Banner</h3>
+      <button id="banner-drawer-close-btn" class="drawer-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    
+    <form id="banner-form" class="drawer-body">
+      <input type="hidden" id="form-banner-id">
+      <div class="form-group">
+        <label for="form-banner-image">Banner Image URL / Path</label>
+        <input type="text" id="form-banner-image" placeholder="e.g. assets/hero_bg.png" required>
+        <p style="font-size:0.6rem; color:#888; margin-top:0.3rem;">
+          Use relative paths (e.g. <code>assets/hero_bg.png</code>) or full URLs.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="form-banner-title">Main Title (Heading) (Optional)</label>
+        <input type="text" id="form-banner-title" placeholder="e.g. Handcrafted Elegance">
+      </div>
+
+      <div class="form-group">
+        <label for="form-banner-subtitle">Description / Details (Paragraph) (Optional)</label>
+        <textarea id="form-banner-subtitle" rows="3" placeholder="Describe the banner's focus or promotion..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="form-banner-link">Call to Action Link (URL) (Optional)</label>
+        <input type="text" id="form-banner-link" placeholder="e.g. shop.html?category=Ethnic">
+      </div>
+
+      <div class="form-row" style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+          <label for="form-banner-size">Sizing Mode (Crop)</label>
+          <select id="form-banner-size" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); background: var(--cream-ivory); font-family: var(--font-body); font-size: 0.85rem;">
+            <option value="cover">Fill Screen (Cover - May Crop)</option>
+            <option value="contain">Fit Screen (Contain - No Crop)</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+          <label for="form-banner-position">Focus Position</label>
+          <select id="form-banner-position" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-rose); background: var(--cream-ivory); font-family: var(--font-body); font-size: 0.85rem;">
+            <option value="center">Center</option>
+            <option value="top">Top</option>
+            <option value="bottom">Bottom</option>
+            <option value="left">Left</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" style="margin-top: 1rem;" id="banner-form-submit-btn">Save Banner</button>
+    </form>
+  </div>
+
+  <!-- Side Drawer Form for Add Homepage Review -->
+  <div id="homepage-review-drawer" class="drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Add Testimonial</h3>
+      <button id="homepage-review-drawer-close-btn" class="drawer-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    
+    <form id="homepage-review-form" class="drawer-body">
+      <div class="form-group">
+        <label for="form-review-rating">Rating (Stars 1 to 5)</label>
+        <select id="form-review-rating" required>
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="form-review-author">Author Name</label>
+        <input type="text" id="form-review-author" placeholder="e.g. Anjali Sharma" required>
+      </div>
+
+      <div class="form-group">
+        <label for="form-review-location">Author Location (Optional)</label>
+        <input type="text" id="form-review-location" placeholder="e.g. Delhi, IN">
+      </div>
+
+      <div class="form-group">
+        <label for="form-review-text">Review Text</label>
+        <textarea id="form-review-text" rows="4" placeholder="Describe their experience..." required style="width: 100%; background-color: var(--cream-ivory); border: 1px solid var(--border-rose); padding: 0.8rem 1rem; font-family: var(--font-body); font-size: 0.85rem; color: var(--black);"></textarea>
+      </div>
+
+      <button type="submit" class="btn-login" style="margin-top: 1rem;">Save Testimonial</button>
+    </form>
+  </div>
+
+  <!-- Side Drawer Form for Add Instagram Post -->
+  <div id="instagram-drawer" class="drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Add Instagram Post</h3>
+      <button id="instagram-drawer-close-btn" class="drawer-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    
+    <form id="instagram-form" class="drawer-body">
+      <div class="form-group">
+        <label for="form-instagram-image">Image Path / URL</label>
+        <input type="text" id="form-instagram-image" placeholder="e.g. assets/logo.png" required>
+        <p style="font-size:0.6rem; color:#888; margin-top:0.3rem;">
+          Use relative paths (e.g. <code>assets/logo.png</code>) or full URLs.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="form-instagram-link">Post URL (Optional)</label>
+        <input type="text" id="form-instagram-link" placeholder="e.g. https://instagram.com/manih_jewelz">
+      </div>
+
+      <button type="submit" class="btn-login" style="margin-top: 1rem;">Save Post</button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <footer class="admin-footer">
+    <p>&copy; 2026 Manih Jewelz. Secure SQL Administrative Manih Jewelz Console. <a href="index.html">Back to Public Shop</a></p>
+  </footer>
+
+  <!-- Admin Script Logic -->
+  <script>
+      window.onerror = function(message, source, lineno, colno, error) {
+        alert("JS Error: " + message + " at line " + lineno + " in " + source);
+        return false;
+      };
+
+      const API_BASE = (window.location.protocol === 'file:') ? 'http://localhost:3000' : '';
+
+      let products = [];
+      let orders = [];
+      let transactions = [];
+      let banners = [];
+      let reviews = [];
+      let instagram = [];
+      let restock = [];
+      let heritage = null;
+      let adminStorage;
+      try {
+        localStorage.setItem('__test', '1');
+        localStorage.removeItem('__test');
+        adminStorage = localStorage;
+      } catch (e) {
+        try {
+          sessionStorage.setItem('__test', '1');
+          sessionStorage.removeItem('__test');
+          adminStorage = sessionStorage;
+        } catch (e2) {
+          const memoryStorage = {};
+          adminStorage = {
+            getItem: (key) => memoryStorage[key] || null,
+            setItem: (key, val) => { memoryStorage[key] = val; },
+            removeItem: (key) => { delete memoryStorage[key]; }
+          };
+        }
+      }
+      const loginForm = document.getElementById('login-form');
+      const loginError = document.getElementById('login-error');
+      const loginScreen = document.getElementById('login-screen');
+      const adminDashboard = document.getElementById('admin-dashboard');
+      const logoutBtn = document.getElementById('logout-btn');
+
+      let sessionToken = adminStorage.getItem('manih_admin_token') || '';
+
+      // Check if already authenticated
+      if (sessionToken) {
+        showDashboard();
+      }
+
+      // --------------------------------------------------------------------------
+      // 1. Authentication Handlers
+      // --------------------------------------------------------------------------
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = document.getElementById('admin-password').value.trim();
+
+        try {
+          const response = await fetch(`${API_BASE}/api/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            adminStorage.setItem('manih_admin_token', data.token);
+            sessionToken = data.token;
+            showDashboard();
+          } else {
+            throw new Error(data.error || 'Login failed');
+          }
+        } catch (err) {
+          loginError.textContent = err.message;
+          loginError.style.display = 'block';
+        }
+      });
+
+      logoutBtn.addEventListener('click', () => {
+        adminStorage.removeItem('manih_admin_token');
+        sessionToken = '';
+        location.reload();
+      });
+
+      function showDashboard() {
+        loginScreen.style.display = 'none';
+        adminDashboard.style.display = 'block';
+        logoutBtn.style.display = 'block';
+        loadDashboardData();
+      }
+
+      // --------------------------------------------------------------------------
+      // 2. Load Dashboard Data
+      // --------------------------------------------------------------------------
+      async function loadDashboardData() {
+        try {
+          const response = await fetch(`${API_BASE}/api/admin/db`);
+          if (!response.ok) throw new Error('Failed to load database logs');
+          const data = await response.json();
+          
+          products = data.products;
+          orders = data.orders;
+          transactions = data.transactions;
+          banners = data.banners || [];
+          reviews = data.reviews || [];
+          instagram = data.instagram || [];
+          restock = data.restock || [];
+          heritage = data.heritage || null;
+
+          calculateAnalytics();
+          renderProductsTable();
+          renderOrdersTable();
+          renderTransactionsTable();
+          renderBannersTable();
+          renderHeritageForm();
+          renderHomepageReviewsTable();
+          renderInstagramTable();
+          renderRestockTable();
+        } catch (err) {
+          console.error("Dashboard load error:", err);
+          alert("Error connecting to database. Details: " + err.message + "\n\nPlease try logging in again.");
+          adminStorage.removeItem('manih_admin_token');
+          sessionToken = '';
+          loginScreen.style.display = 'block';
+          adminDashboard.style.display = 'none';
+          logoutBtn.style.display = 'none';
+        }
+      }
+
+      function calculateAnalytics() {
+        // Calculate Revenue
+        const totalRevenue = orders
+          .filter(o => o.status === 'Paid')
+          .reduce((sum, o) => sum + o.total_amount, 0);
+        
+        document.getElementById('stat-revenue').textContent = `RS ${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('stat-orders').textContent = orders.length;
+        document.getElementById('stat-products').textContent = products.length;
+        document.getElementById('stat-transactions').textContent = transactions.length;
+      }
+
+      // --------------------------------------------------------------------------
+      // 3. Render Tables
+      // --------------------------------------------------------------------------
+      function renderProductsTable() {
+        const tbody = document.getElementById('admin-products-tbody');
+        if (products.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">No products found in the database.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = products.map(p => {
+          // Find first image
+          const firstImg = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : 'assets/logo.png';
+          return `
+            <tr>
+              <td>
+                <div class="table-prod-img">
+                  <img src="${firstImg}" alt="${p.name}">
+                </div>
+              </td>
+              <td><strong>${p.name}</strong><br><span style="font-size:0.7rem; color:#888;">Code: ${p.product_code || '-'} | ID: ${p.id}</span></td>
+              <td><span class="tag tag-category">${p.category}</span></td>
+              <td><strong>RS ${p.base_price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></td>
+              <td><strong>${p.discount_price ? `RS ${p.discount_price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '-'}</strong></td>
+              <td style="color: ${p.stock <= 0 ? '#c92a2a' : p.stock <= 3 ? '#d4a373' : 'inherit'}">${p.stock} units</td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-outline-action btn-edit" data-id="${p.id}"><i class="fa-solid fa-pen"></i> Edit</button>
+                  <button class="btn-outline-action btn-danger btn-delete" data-id="${p.id}"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        // Attach buttons
+        tbody.querySelectorAll('.btn-edit').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            openEditDrawer(id);
+          });
+        });
+
+        tbody.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            deleteProduct(id);
+          });
+        });
+      }
+
+      function renderOrdersTable() {
+        const tbody = document.getElementById('admin-orders-tbody');
+        if (orders.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#888;">No customer orders placed yet.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = orders.map(o => {
+          let actionBtnHTML = '';
+          if (o.status && o.status.toLowerCase() === 'paid') {
+            actionBtnHTML = `<button class="btn-ship" data-id="${o.id}" style="padding: 0.3rem 0.6rem; font-size: 0.7rem; border-radius: 4px; background-color: var(--bg-maroon); color: white; border: none; cursor: pointer; font-family: var(--font-body); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Mark Shipped</button>`;
+          } else if (o.status && o.status.toLowerCase() === 'shipped') {
+            actionBtnHTML = `<span style="font-size: 0.75rem; color: #007bff; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Shipped</span>`;
+          } else {
+            actionBtnHTML = `<span style="font-size: 0.75rem; color: #888;">N/A</span>`;
+          }
+
+          const itemsListHTML = (o.items && o.items.length > 0)
+            ? o.items.map(item => `
+                <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; padding: 0.3rem; background-color: var(--cream-ivory); border-radius: 4px; border: 1px solid var(--border-rose); min-width: 200px;">
+                  <img src="${item.image}" alt="${item.productName}" style="width: 35px; height: 35px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-rose); flex-shrink: 0;">
+                  <div style="font-size: 0.72rem; line-height: 1.25; text-align: left;">
+                    <strong style="color: var(--black);">${item.productName}</strong><br>
+                    <span style="color: #666;">Qty: ${item.quantity} | Polish: ${item.metal || 'Standard'}</span>
+                  </div>
+                </div>
+              `).join('')
+            : '<span style="color:#999; font-size:0.75rem;">No items.</span>';
+
+          return `
+            <tr>
+              <td><strong>#000${o.id}</strong></td>
+              <td>
+                <strong>${o.customer_name}</strong><br>
+                <small style="color:#777;">${o.customer_email}</small>
+              </td>
+              <td><div style="display:flex; flex-direction:column;">${itemsListHTML}</div></td>
+              <td><span style="font-size:0.75rem; color:#555;" title="${o.shipping_address}">${o.shipping_address}</span></td>
+              <td><strong>RS ${o.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></td>
+              <td><span class="tag tag-${o.status.toLowerCase()}">${o.status}</span></td>
+              <td style="color:#666; font-size:0.75rem;">${new Date(o.created_at).toLocaleString()}</td>
+              <td>${actionBtnHTML}</td>
+            </tr>
+          `;
+        }).join('');
+
+        tbody.querySelectorAll('.btn-ship').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            if (confirm(`Are you sure you want to mark order #000${id} as Shipped? This will send a shipping confirmation email to the customer.`)) {
+              await updateOrderStatus(id, 'Shipped');
+            }
+          });
+        });
+      }
+
+      function renderTransactionsTable() {
+        const tbody = document.getElementById('admin-transactions-tbody');
+        if (transactions.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">No transactions recorded.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = transactions.map(t => `
+          <tr>
+            <td><code style="color:var(--bg-maroon)">${t.transaction_ref}</code></td>
+            <td>#000${t.order_id}</td>
+            <td><strong>RS ${t.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></td>
+            <td>${t.payment_method}</td>
+            <td><span class="tag tag-success">${t.status}</span></td>
+            <td>${t.provider}</td>
+            <td style="color:#666">${new Date(t.created_at).toLocaleString()}</td>
+          </tr>
+        `).join('');
+      }
+
+      function renderHeritageForm() {
+        if (!heritage) return;
+        document.getElementById('form-heritage-subtitle').value = heritage.subtitle || '';
+        document.getElementById('form-heritage-title').value = heritage.title || '';
+        document.getElementById('form-heritage-desc1').value = heritage.desc1 || '';
+        document.getElementById('form-heritage-desc2').value = heritage.desc2 || '';
+        document.getElementById('form-heritage-image').value = heritage.image_url || '';
+      }
+
+      function renderHomepageReviewsTable() {
+        const tbody = document.getElementById('admin-homepage-reviews-tbody');
+        if (!tbody) return;
+
+        if (reviews.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">No customer reviews found in the database.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = reviews.map(r => `
+          <tr>
+            <td><strong>${r.rating} ★</strong></td>
+            <td><strong>${r.author_name}</strong><br><span style="font-size:0.7rem; color:#888;">ID: ${r.id}</span></td>
+            <td>${r.author_location || '-'}</td>
+            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${r.review_text}">${r.review_text}</td>
+            <td>
+              <div class="actions-cell">
+                <button class="btn-outline-action btn-danger btn-delete-review" data-id="${r.id}"><i class="fa-solid fa-trash"></i> Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.btn-delete-review').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            deleteReview(id);
+          });
+        });
+      }
+
+      async function deleteReview(reviewId) {
+        if (!confirm("Are you absolutely certain you wish to delete this review? This action is permanent.")) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/api/admin/reviews/${reviewId}`, {
+            method: 'DELETE'
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Failed to delete review');
+
+          loadDashboardData();
+        } catch (err) {
+          alert("Database Error: " + err.message);
+        }
+      }
+
+      function renderInstagramTable() {
+        const tbody = document.getElementById('admin-instagram-tbody');
+        if (!tbody) return;
+
+        if (instagram.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#888;">No Instagram posts found in the database.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = instagram.map(post => `
+          <tr>
+            <td>
+              <div class="table-prod-img">
+                <img src="${post.image_url}" alt="Instagram Post">
+              </div>
+            </td>
+            <td><code>${post.image_url}</code><br><span style="font-size:0.7rem; color:#888;">ID: ${post.id}</span></td>
+            <td><a href="${post.post_url || '#'}" target="_blank" style="color: var(--bg-maroon); font-weight: 600;">${post.post_url || 'Link'}</a></td>
+            <td>
+              <div class="actions-cell">
+                <button class="btn-outline-action btn-danger btn-delete-instagram" data-id="${post.id}"><i class="fa-solid fa-trash"></i> Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.btn-delete-instagram').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            deleteInstagram(id);
+          });
+        });
+      }
+
+      function renderRestockTable() {
+        const tbody = document.getElementById('admin-restock-tbody');
+        if (!tbody) return;
+
+        if (restock.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">No restock requests found in the database.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = restock.map(r => `
+          <tr>
+            <td><code>#RQ000${r.id}</code></td>
+            <td><code>#PR000${r.product_id}</code></td>
+            <td><strong>${r.product_name}</strong></td>
+            <td>${r.customer_name || 'Guest'}</td>
+            <td><a href="mailto:${r.customer_email}" style="color: var(--bg-maroon); text-decoration: underline;">${r.customer_email}</a></td>
+            <td style="color: #666;">${new Date(r.created_at).toLocaleString()}</td>
+          </tr>
+        `).join('');
+      }
+
+      async function deleteInstagram(postId) {
+        if (!confirm("Are you absolutely certain you wish to delete this Instagram post? This action is permanent.")) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/api/admin/instagram/${postId}`, {
+            method: 'DELETE'
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Failed to delete Instagram post');
+
+          loadDashboardData();
+        } catch (err) {
+          alert("Database Error: " + err.message);
+        }
+      }
+
+      // --------------------------------------------------------------------------
+      // 4. Tab Switching
+      // --------------------------------------------------------------------------
+      const sidebarButtons = document.querySelectorAll('.sidebar-btn');
+      const panels = document.querySelectorAll('.dashboard-panel');
+
+      sidebarButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          sidebarButtons.forEach(b => b.classList.remove('active'));
+          panels.forEach(p => p.style.display = 'none');
+
+          const activeBtn = e.currentTarget;
+          activeBtn.classList.add('active');
+
+          const targetPanelId = activeBtn.getAttribute('data-target');
+          document.getElementById(targetPanelId).style.display = 'block';
+        });
+      });
+
+      // --------------------------------------------------------------------------
+      // 5. Product Management CRUD
+      // --------------------------------------------------------------------------
+      const productDrawer = document.getElementById('product-drawer');
+      const drawerOverlay = document.getElementById('drawer-overlay');
+      const addProductBtn = document.getElementById('add-product-btn');
+      const drawerCloseBtn = document.getElementById('drawer-close-btn');
+      const productForm = document.getElementById('product-form');
+      
+      const formProdId = document.getElementById('form-product-id');
+      const formName = document.getElementById('form-name');
+      const formCategory = document.getElementById('form-category');
+      const formPrice = document.getElementById('form-price');
+      const formDiscountPrice = document.getElementById('form-discount-price');
+      const formStock = document.getElementById('form-stock');
+      const formDesc = document.getElementById('form-desc');
+
+      const imagePathsContainer = document.getElementById('image-paths-container');
+
+      // Metal variant options visibility listener
+      const variantTypeSelect = document.getElementById('form-metal-variant-type');
+      const groupMainStock = document.getElementById('group-main-stock');
+      const groupVariantStocks = document.getElementById('group-variant-stocks');
+      const groupGoldStock = document.getElementById('group-gold-stock');
+      const groupSilverStock = document.getElementById('group-silver-stock');
+
+      if (variantTypeSelect) {
+        variantTypeSelect.addEventListener('change', () => {
+          const val = variantTypeSelect.value;
+          if (val === 'none') {
+            if (groupMainStock) groupMainStock.style.display = 'block';
+            if (groupVariantStocks) groupVariantStocks.style.display = 'none';
+          } else if (val === 'both') {
+            if (groupMainStock) groupMainStock.style.display = 'none';
+            if (groupVariantStocks) groupVariantStocks.style.display = 'flex';
+            if (groupGoldStock) groupGoldStock.style.display = 'block';
+            if (groupSilverStock) groupSilverStock.style.display = 'block';
+          } else if (val === 'golden') {
+            if (groupMainStock) groupMainStock.style.display = 'none';
+            if (groupVariantStocks) groupVariantStocks.style.display = 'flex';
+            if (groupGoldStock) groupGoldStock.style.display = 'block';
+            if (groupSilverStock) groupSilverStock.style.display = 'none';
+          } else if (val === 'silver') {
+            if (groupMainStock) groupMainStock.style.display = 'none';
+            if (groupVariantStocks) groupVariantStocks.style.display = 'flex';
+            if (groupGoldStock) groupGoldStock.style.display = 'none';
+            if (groupSilverStock) groupSilverStock.style.display = 'block';
+          }
+        });
+      }
+      const btnAddImagePath = document.getElementById('btn-add-image-path');
+
+      const drawerTitleText = document.getElementById('drawer-title-text');
+      const formSubmitBtn = document.getElementById('form-submit-btn');
+
+      // Helper to dynamically add an image input field in drawer
+      function addImageInput(value = '') {
+        const div = document.createElement('div');
+        div.className = 'form-row';
+        div.style.marginBottom = '0.5rem';
+        div.innerHTML = `
+          <input type="text" class="form-gallery-image-input" placeholder="assets/jhumka_kundan.png" value="${value}" style="flex: 1;" required>
+          <button type="button" class="btn-outline-action btn-danger btn-remove-image-input" style="padding: 0.5rem; width: 38px; display: flex; align-items: center; justify-content: center; height: 38px;">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        `;
+        imagePathsContainer.appendChild(div);
+
+        // Attach trash delete click handler
+        div.querySelector('.btn-remove-image-input').addEventListener('click', () => {
+          // Keep at least one image input field
+          if (imagePathsContainer.children.length > 1) {
+            div.remove();
+          } else {
+            alert("Each jewelry creation must possess at least one product photograph path.");
+          }
+        });
+      }
+
+      btnAddImagePath.addEventListener('click', () => addImageInput(''));
+
+      // File Uploader Handler for Cloudinary Integration
+      const imageFileInput = document.getElementById('image-file-input');
+      const uploadStatus = document.getElementById('upload-status');
+
+      if (imageFileInput && uploadStatus) {
+        imageFileInput.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          // Display uploading state
+          uploadStatus.textContent = "Uploading...";
+          uploadStatus.style.display = "inline";
+          uploadStatus.style.color = "#888";
+
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            const base64Data = reader.result;
+            try {
+              const response = await fetch(`${API_BASE}/api/admin/upload-image`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64Data })
+              });
+
+              const data = await response.json();
+              if (!response.ok) throw new Error(data.error || "Upload failed");
+
+              // Inject the returned Cloudinary URL into the input field
+              addImageInput(data.secure_url);
+              
+              // Indicate success
+              uploadStatus.textContent = "Success!";
+              uploadStatus.style.color = "green";
+              setTimeout(() => {
+                uploadStatus.style.display = "none";
+              }, 2000);
+            } catch (err) {
+              console.error("Upload error:", err);
+              alert("Image Upload Failed: " + err.message);
+              uploadStatus.textContent = "Failed";
+              uploadStatus.style.color = "red";
+              setTimeout(() => {
+                uploadStatus.style.display = "none";
+              }, 3000);
+            } finally {
+              imageFileInput.value = '';
+            }
+          };
+
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // Open Add drawer
+      addProductBtn.addEventListener('click', () => {
+        productForm.reset();
+        formProdId.value = '';
+        if (formDiscountPrice) formDiscountPrice.value = '';
+        const formCodeGroup = document.getElementById('form-code-group');
+        if (formCodeGroup) formCodeGroup.style.display = 'none';
+        drawerTitleText.textContent = "Add New Creation";
+        formSubmitBtn.textContent = "Add Product";
+        
+        // Reset image inputs
+        imagePathsContainer.innerHTML = '';
+        addImageInput('assets/logo.png');
+        
+        // Uncheck all specifications checkboxes
+        document.querySelectorAll('.spec-checkbox').forEach(cb => cb.checked = false);
+
+        // Reset metal variant select and stock fields
+        if (variantTypeSelect) {
+          variantTypeSelect.value = 'none';
+          variantTypeSelect.dispatchEvent(new Event('change'));
+        }
+        document.getElementById('form-stock').value = '';
+        const goldStockInput = document.getElementById('form-gold-stock');
+        const silverStockInput = document.getElementById('form-silver-stock');
+        if (goldStockInput) goldStockInput.value = '';
+        if (silverStockInput) silverStockInput.value = '';
+        
+        openDrawer();
+      });
+
+      // Open Edit drawer
+      function openEditDrawer(productId) {
+        const item = products.find(p => p.id === productId);
+        if (!item) return;
+
+        const formCodeGroup = document.getElementById('form-code-group');
+        const formProductCode = document.getElementById('form-product-code');
+        if (formCodeGroup && formProductCode) {
+          formCodeGroup.style.display = 'block';
+          formProductCode.textContent = item.product_code || 'Pending';
+        }
+
+        formProdId.value = item.id;
+        formName.value = item.name;
+        formCategory.value = item.category;
+        formPrice.value = item.base_price;
+        formDiscountPrice.value = item.discount_price !== null && item.discount_price !== undefined ? item.discount_price : '';
+        formStock.value = item.stock;
+        formDesc.value = item.description;
+
+        // Reset and populate image paths
+        imagePathsContainer.innerHTML = '';
+        if (Array.isArray(item.images)) {
+          item.images.forEach(img => addImageInput(img));
+        } else if (item.images && typeof item.images === 'object') {
+          // Handle old object format
+          const uniqueImages = [...new Set(Object.values(item.images))];
+          uniqueImages.forEach(img => addImageInput(img));
+        } else {
+          // String or empty
+          addImageInput(item.images || 'assets/logo.png');
+        }
+
+        // Keep at least one input if somehow empty
+        if (imagePathsContainer.children.length === 0) {
+          addImageInput('assets/logo.png');
+        }
+
+        // Populate specs checkboxes based on keys in item.specs
+        document.querySelectorAll('.spec-checkbox').forEach(cb => {
+          cb.checked = !!item.specs[cb.value];
+        });
+
+        // Populate metal variant select and variant stocks
+        const metals = item.metal_options ? item.metal_options.toLowerCase().split(',') : ['golden', 'silver'];
+        const goldStockVal = item.gold_stock !== undefined ? item.gold_stock : 0;
+        const silverStockVal = item.silver_stock !== undefined ? item.silver_stock : 0;
+
+        const goldStockInput = document.getElementById('form-gold-stock');
+        const silverStockInput = document.getElementById('form-silver-stock');
+        if (goldStockInput) goldStockInput.value = goldStockVal;
+        if (silverStockInput) silverStockInput.value = silverStockVal;
+
+        if (item.metal_options === 'none') {
+          if (variantTypeSelect) variantTypeSelect.value = 'none';
+        } else if (metals.includes('golden') && metals.includes('silver')) {
+          if (variantTypeSelect) variantTypeSelect.value = 'both';
+        } else if (metals.includes('golden')) {
+          if (variantTypeSelect) variantTypeSelect.value = 'golden';
+        } else if (metals.includes('silver')) {
+          if (variantTypeSelect) variantTypeSelect.value = 'silver';
+        } else {
+          if (variantTypeSelect) variantTypeSelect.value = 'none';
+        }
+
+        if (variantTypeSelect) variantTypeSelect.dispatchEvent(new Event('change'));
+
+        drawerTitleText.textContent = "Modify Creation";
+        formSubmitBtn.textContent = "Apply Updates";
+        openDrawer();
+      }
+
+      function openDrawer() {
+        productDrawer.classList.add('active');
+        drawerOverlay.classList.add('active');
+      }
+
+      function closeDrawer() {
+        productDrawer.classList.remove('active');
+        drawerOverlay.classList.remove('active');
+      }
+
+      drawerCloseBtn.addEventListener('click', closeDrawer);
+
+      // Handle Product Form Submit (Add or Edit)
+      productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Collect specs from checkboxes
+        const specs = {};
+        document.querySelectorAll('.spec-checkbox').forEach(cb => {
+          if (cb.checked) {
+            specs[cb.value] = "Yes";
+          }
+        });
+
+        // Collect all image paths from dynamic gallery inputs
+        const imageInputs = document.querySelectorAll('.form-gallery-image-input');
+        const imagesArray = Array.from(imageInputs)
+          .map(input => input.value.trim())
+          .filter(val => val !== '');
+
+        if (imagesArray.length === 0) {
+          alert("Please add at least one image path for the product gallery.");
+          return;
+        }
+
+        const discountVal = (formDiscountPrice && formDiscountPrice.value) ? formDiscountPrice.value.trim() : '';
+
+        const varType = variantTypeSelect ? variantTypeSelect.value : 'none';
+        let stockVal = 0;
+        let goldStockVal = 0;
+        let silverStockVal = 0;
+        let metalOptionsStr = 'none';
+
+        if (varType === 'none') {
+          stockVal = parseInt(document.getElementById('form-stock').value) || 0;
+          goldStockVal = 0;
+          silverStockVal = 0;
+          metalOptionsStr = 'none';
+        } else if (varType === 'both') {
+          goldStockVal = parseInt(document.getElementById('form-gold-stock').value) || 0;
+          silverStockVal = parseInt(document.getElementById('form-silver-stock').value) || 0;
+          stockVal = goldStockVal + silverStockVal;
+          metalOptionsStr = 'golden,silver';
+        } else if (varType === 'golden') {
+          goldStockVal = parseInt(document.getElementById('form-gold-stock').value) || 0;
+          silverStockVal = 0;
+          stockVal = goldStockVal;
+          metalOptionsStr = 'golden';
+        } else if (varType === 'silver') {
+          goldStockVal = 0;
+          silverStockVal = parseInt(document.getElementById('form-silver-stock').value) || 0;
+          stockVal = silverStockVal;
+          metalOptionsStr = 'silver';
+        }
+
+        const payload = {
+          name: formName.value.trim(),
+          category: formCategory.value,
+          base_price: parseFloat(formPrice.value),
+          discount_price: discountVal !== '' ? parseFloat(discountVal) : null,
+          stock: stockVal,
+          gold_stock: goldStockVal,
+          silver_stock: silverStockVal,
+          description: formDesc.value.trim(),
+          images: imagesArray,
+          specs: specs,
+          metal_options: metalOptionsStr
+        };
+
+        const isEdit = formProdId.value !== '';
+        const url = isEdit ? `${API_BASE}/api/products/${formProdId.value}` : `${API_BASE}/api/products`;
+        const method = isEdit ? 'PUT' : 'POST';
+
+        try {
+          const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Failed to save product');
+
+          closeDrawer();
+          loadDashboardData(); // Refresh Tables
+        } catch (err) {
+          alert("Manih Jewelz Error: " + err.message);
+        }
+      });
+
+      // Delete Product
+      async function deleteProduct(productId) {
+        if (!confirm("Are you absolutely certain you wish to remove this jewelry piece from the inventory database? This action is permanent.")) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/api/products/${productId}`, {
+            method: 'DELETE'
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Failed to delete product');
+
+          loadDashboardData(); // Refresh Tables
+        } catch (err) {
+          alert("Database Error: " + err.message);
+        }
+      }
+
+      // Update Order Status (Mark Shipped)
+      async function updateOrderStatus(orderId, status) {
+        try {
+          const response = await fetch(`${API_BASE}/api/admin/orders/update-status`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': sessionToken
+            },
+            body: JSON.stringify({ orderId, status })
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "Failed to update order status.");
+
+          alert("Order status updated successfully!");
+          loadDashboardData(); // Refresh Tables
+        } catch (err) {
+          alert("Admin Error: " + err.message);
+        }
+      }
+
+      // --------------------------------------------------------------------------
+      // 6. Banner Management CRUD
+      // --------------------------------------------------------------------------
+      function renderBannersTable() {
+        const tbody = document.getElementById('admin-banners-tbody');
+        if (!tbody) return;
+
+        if (banners.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">No home banners found in the database.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = banners.map(b => `
+          <tr>
+            <td>
+              <div class="table-prod-img" style="width: 80px; height: 45px;">
+                <img src="${b.image_url}" alt="${b.title || 'Banner'}" style="object-fit: cover; width: 100%; height: 100%;">
+              </div>
+            </td>
+            <td>
+              <strong>${b.title || 'Untitled'}</strong><br>
+              <span style="font-size:0.7rem; color:#888;">ID: ${b.id}</span><br>
+              <span class="tag tag-category" style="font-size:0.6rem; padding:0.15rem 0.4rem; margin-top:0.25rem; display:inline-block; border-radius:3px;">
+                ${b.bg_size || 'cover'} / ${b.bg_position || 'center'}
+              </span>
+            </td>
+            <td><span style="font-size:0.8rem; color:#555;" title="${b.subtitle || ''}">${b.subtitle || ''}</span></td>
+            <td><code style="font-size:0.75rem;">${b.link_url || ''}</code></td>
+            <td>
+              <div class="actions-cell">
+                <button class="btn-outline-action btn-edit-banner" data-id="${b.id}"><i class="fa-solid fa-pen"></i> Edit</button>
+                <button class="btn-outline-action btn-danger btn-delete-banner" data-id="${b.id}"><i class="fa-solid fa-trash"></i> Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+
+        // Attach buttons
+        tbody.querySelectorAll('.btn-edit-banner').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            openEditBannerDrawer(id);
+          });
+        });
+
+        tbody.querySelectorAll('.btn-delete-banner').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            deleteBanner(id);
+          });
+        });
+      }
+
+      const bannerDrawer = document.getElementById('banner-drawer');
+      const addBannerBtn = document.getElementById('add-banner-btn');
+      const bannerDrawerCloseBtn = document.getElementById('banner-drawer-close-btn');
+      const bannerForm = document.getElementById('banner-form');
+
+      const formBannerImage = document.getElementById('form-banner-image');
+      const formBannerTitle = document.getElementById('form-banner-title');
+      const formBannerSubtitle = document.getElementById('form-banner-subtitle');
+      const formBannerLink = document.getElementById('form-banner-link');
+
+      function openBannerDrawer() {
+        bannerDrawer.classList.add('active');
+        drawerOverlay.classList.add('active');
+      }
+
+      function closeBannerDrawer() {
+        bannerDrawer.classList.remove('active');
+        drawerOverlay.classList.remove('active');
+      }
+
+      const formBannerId = document.getElementById('form-banner-id');
+      const bannerDrawerTitleText = document.getElementById('banner-drawer-title-text');
+      const bannerFormSubmitBtn = document.getElementById('banner-form-submit-btn');
+
+      if (addBannerBtn) {
+        addBannerBtn.addEventListener('click', () => {
+          bannerForm.reset();
+          if (formBannerId) formBannerId.value = '';
+          if (bannerDrawerTitleText) bannerDrawerTitleText.textContent = "Add Home Banner";
+          if (bannerFormSubmitBtn) bannerFormSubmitBtn.textContent = "Save Banner";
+          openBannerDrawer();
+        });
+      }
+
+      function openEditBannerDrawer(bannerId) {
+        const item = banners.find(b => b.id === bannerId);
+        if (!item) return;
+
+        if (formBannerId) formBannerId.value = item.id;
+        formBannerImage.value = item.image_url;
+        formBannerTitle.value = item.title || '';
+        formBannerSubtitle.value = item.subtitle || '';
+        formBannerLink.value = item.link_url || '';
+        document.getElementById('form-banner-size').value = item.bg_size || 'cover';
+        document.getElementById('form-banner-position').value = item.bg_position || 'center';
+
+        if (bannerDrawerTitleText) bannerDrawerTitleText.textContent = "Edit Home Banner";
+        if (bannerFormSubmitBtn) bannerFormSubmitBtn.textContent = "Apply Updates";
+        openBannerDrawer();
+      }
+
+      if (bannerDrawerCloseBtn) {
+        bannerDrawerCloseBtn.addEventListener('click', closeBannerDrawer);
+      }
+
+      // --------------------------------------------------------------------------
+      // 7. Our Story (Heritage) Form Submit
+      // --------------------------------------------------------------------------
+      const heritageForm = document.getElementById('heritage-form');
+      if (heritageForm) {
+        heritageForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const payload = {
+            subtitle: document.getElementById('form-heritage-subtitle').value.trim(),
+            title: document.getElementById('form-heritage-title').value.trim(),
+            desc1: document.getElementById('form-heritage-desc1').value.trim(),
+            desc2: document.getElementById('form-heritage-desc2').value.trim(),
+            image_url: document.getElementById('form-heritage-image').value.trim().replace(/\\/g, '/')
+          };
+
+          try {
+            const response = await fetch(`${API_BASE}/api/admin/heritage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to save story');
+            alert("Heritage story settings saved successfully.");
+            loadDashboardData();
+          } catch (err) {
+            alert("Database Error: " + err.message);
+          }
+        });
+      }
+
+      // --------------------------------------------------------------------------
+      // 8. Reviews and Instagram Drawers and Forms
+      // --------------------------------------------------------------------------
+      const reviewDrawer = document.getElementById('homepage-review-drawer');
+      const addReviewBtn = document.getElementById('add-homepage-review-btn');
+      const reviewDrawerCloseBtn = document.getElementById('homepage-review-drawer-close-btn');
+      const reviewForm = document.getElementById('homepage-review-form');
+
+      const instagramDrawer = document.getElementById('instagram-drawer');
+      const addInstagramBtn = document.getElementById('add-instagram-btn');
+      const instagramDrawerCloseBtn = document.getElementById('instagram-drawer-close-btn');
+      const instagramForm = document.getElementById('instagram-form');
+
+      function openReviewDrawer() {
+        reviewDrawer.classList.add('active');
+        drawerOverlay.classList.add('active');
+      }
+      function closeReviewDrawer() {
+        reviewDrawer.classList.remove('active');
+        drawerOverlay.classList.remove('active');
+      }
+      function openInstagramDrawer() {
+        instagramDrawer.classList.add('active');
+        drawerOverlay.classList.add('active');
+      }
+      function closeInstagramDrawer() {
+        instagramDrawer.classList.remove('active');
+        drawerOverlay.classList.remove('active');
+      }
+
+      if (addReviewBtn) {
+        addReviewBtn.addEventListener('click', () => {
+          reviewForm.reset();
+          openReviewDrawer();
+        });
+      }
+      if (reviewDrawerCloseBtn) {
+        reviewDrawerCloseBtn.addEventListener('click', closeReviewDrawer);
+      }
+
+      if (addInstagramBtn) {
+        addInstagramBtn.addEventListener('click', () => {
+          instagramForm.reset();
+          openInstagramDrawer();
+        });
+      }
+      if (instagramDrawerCloseBtn) {
+        instagramDrawerCloseBtn.addEventListener('click', closeInstagramDrawer);
+      }
+
+      if (reviewForm) {
+        reviewForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const payload = {
+            rating: parseInt(document.getElementById('form-review-rating').value),
+            author_name: document.getElementById('form-review-author').value.trim(),
+            author_location: document.getElementById('form-review-location').value.trim(),
+            review_text: document.getElementById('form-review-text').value.trim()
+          };
+
+          try {
+            const response = await fetch(`${API_BASE}/api/admin/reviews`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to save review');
+            closeReviewDrawer();
+            loadDashboardData();
+          } catch (err) {
+            alert("Database Error: " + err.message);
+          }
+        });
+      }
+
+      if (instagramForm) {
+        instagramForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const payload = {
+            image_url: document.getElementById('form-instagram-image').value.trim().replace(/\\/g, '/'),
+            post_url: document.getElementById('form-instagram-link').value.trim().replace(/\\/g, '/')
+          };
+
+          try {
+            const response = await fetch(`${API_BASE}/api/admin/instagram`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to save Instagram post');
+            closeInstagramDrawer();
+            loadDashboardData();
+          } catch (err) {
+            alert("Database Error: " + err.message);
+          }
+        });
+      }
+
+      // Shared drawerOverlay closer for all drawers
+      drawerOverlay.addEventListener('click', () => {
+        closeDrawer();
+        closeBannerDrawer();
+        closeReviewDrawer();
+        closeInstagramDrawer();
+      });
+
+      if (bannerForm) {
+        bannerForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const bannerId = formBannerId ? formBannerId.value : '';
+          const isEdit = bannerId !== '';
+          const url = isEdit ? `${API_BASE}/api/admin/banners/${bannerId}` : `${API_BASE}/api/admin/banners`;
+          const method = isEdit ? 'PUT' : 'POST';
+
+          // Automatically convert Windows backslashes to standard web forward slashes
+          const imageUrlVal = formBannerImage.value.trim().replace(/\\/g, '/');
+          const linkUrlVal = formBannerLink.value.trim().replace(/\\/g, '/');
+
+          const payload = {
+            image_url: imageUrlVal,
+            title: formBannerTitle.value.trim(),
+            subtitle: formBannerSubtitle.value.trim(),
+            link_url: linkUrlVal,
+            bg_size: document.getElementById('form-banner-size').value,
+            bg_position: document.getElementById('form-banner-position').value
+          };
+
+          try {
+            const response = await fetch(url, {
+              method: method,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to save banner');
+
+            closeBannerDrawer();
+            loadDashboardData(); // Refresh Tables
+          } catch (err) {
+            alert("Database Error: " + err.message);
+          }
+        });
+      }
+
+      async function deleteBanner(bannerId) {
+        if (!confirm("Are you absolutely certain you wish to remove this banner slide from the home page? This action is permanent.")) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/api/admin/banners/${bannerId}`, {
+            method: 'DELETE'
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Failed to delete banner');
+
+          loadDashboardData(); // Refresh Tables
+        } catch (err) {
+          alert("Database Error: " + err.message);
+        }
+      }
+
+  </script>
+</body>
+</html>
