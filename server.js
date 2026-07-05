@@ -7,6 +7,10 @@ const dns = require('dns');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const cloudinary = require('cloudinary').v2;
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,12 +28,110 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET || 'YOUR_CLOUDINARY_API_SECRET'
 });
 
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
+const adminPasswordHash = bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'manih2026', 10);
+
+function authenticateAdmin(req, res, next) {
+  if (req.path === '/login') {
+    return next();
+  }
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) {
+    return res.status(401).json({ error: "Access denied. No session token provided." });
+  }
+  const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') {
+      return res.status(403).json({ error: "Access denied. Unauthorized permissions." });
+    }
+    req.admin = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Unauthorized. Session token is invalid or expired." });
+  }
+}
+
+function authenticateCustomer(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) {
+    return res.status(401).json({ error: "Access denied. Please log in." });
+  }
+  const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Session expired. Please log in again." });
+  }
+}
+
+// Setup CORS Options dynamically
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const originUrl = new URL(origin);
+    if (originUrl.hostname === 'localhost' || originUrl.hostname === '127.0.0.1' || originUrl.hostname.endsWith('.onrender.com')) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+};
+
+// Setup Helmet with custom Content Security Policy
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://checkout.razorpay.com", "https://accounts.google.com/gsi/client", "https://cdnjs.cloudflare.com"],
+      frameSrc: ["'self'", "https://checkout.razorpay.com", "https://api.razorpay.com", "https://accounts.google.com"],
+      connectSrc: ["'self'", "https://api.razorpay.com", "https://accounts.google.com", "https://res.cloudinary.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: []
+    }
+  },
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: false
+}));
+
+// Setup Rate Limiters
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { error: "Too many requests. Please try again later." }
+});
+
+const authLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many authentication attempts. Please try again in 10 minutes." }
+});
+
+const paymentLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many payment initialization requests. Please try again in 10 minutes." }
+});
+
+app.use(generalLimiter);
+app.use('/api/customer/login', authLimiter);
+app.use('/api/customer/signup', authLimiter);
+app.use('/api/admin/login', authLimiter);
+app.use('/api/checkout', paymentLimiter);
+app.use('/api/create-order', paymentLimiter);
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/img', express.static(path.join(__dirname, 'img')));
+app.use('/api/admin', authenticateAdmin);
 
 // Initialize Database
 let db;
@@ -403,10 +505,11 @@ function initializeDatabase() {
         // Seed default customer if empty
         db.get("SELECT COUNT(*) as count FROM customers", [], (err, row) => {
           if (row && row.count === 0) {
+            const defaultHash = bcrypt.hashSync('password123', 10);
             db.run(`
               INSERT INTO customers (name, email, password, phone)
-              VALUES ('Anjali Sharma', 'anjali@example.com', 'password123', '9876543210')
-            `);
+              VALUES ('Anjali Sharma', 'anjali@example.com', ?, '9876543210')
+            `, [defaultHash]);
           }
         });
       });
@@ -1054,19 +1157,32 @@ app.post('/api/checkout', (req, res) => {
 
       let stockError = null;
       let checkedItems = 0;
+      let computedTotal = 0;
+      const productPriceMap = {};
 
       items.forEach((item) => {
-        db.get("SELECT stock, name FROM products WHERE id = ?", [item.productId], (err, row) => {
+        db.get("SELECT stock, name, base_price, discount_price, archived FROM products WHERE id = ?", [item.productId], (err, row) => {
           if (err) {
-            stockError = "Database error verifying stock.";
+            stockError = "Database error verifying product details.";
           } else if (!row) {
             stockError = "Product not found.";
+          } else if (row.archived) {
+            stockError = `${row.name} is no longer available.`;
           } else if (row.stock < item.quantity) {
             stockError = `Insufficient stock for ${row.name}. Only ${row.stock} left.`;
+          } else {
+            const activePrice = row.discount_price !== null && row.discount_price > 0 ? row.discount_price : row.base_price;
+            computedTotal += activePrice * item.quantity;
+            productPriceMap[item.productId] = activePrice;
           }
 
           checkedItems++;
           if (checkedItems === items.length) {
+            computedTotal += 50; // flat shipping fee
+            if (!stockError && Math.abs(computedTotal - parseFloat(totalAmount)) > 0.01) {
+              stockError = "Order total verification failed due to price discrepancy.";
+            }
+
             if (stockError) {
               db.run("ROLLBACK");
               return res.status(400).json({ error: stockError });
@@ -1086,10 +1202,11 @@ app.post('/api/checkout', (req, res) => {
                 let processedItems = 0;
 
                 items.forEach((item) => {
+                  const finalPrice = productPriceMap[item.productId] || 0;
                   db.run(
                     `INSERT INTO order_items (order_id, product_id, quantity, metal, gemstone, price)
                      VALUES (?, ?, ?, ?, ?, ?)`,
-                    [orderId, item.productId, item.quantity, item.metal, item.gemstone, item.price],
+                    [orderId, item.productId, item.quantity, item.metal, item.gemstone, finalPrice],
                     (err) => {
                       if (err) {
                         db.run("ROLLBACK");
@@ -1175,30 +1292,82 @@ app.get('/api/config', (req, res) => {
 
 // Razorpay: Create Order
 app.post('/api/create-order', async (req, res) => {
-  const { amount, currency, receipt } = req.body;
-  if (!amount || amount < 100) {
-    return res.status(400).json({ error: "Amount must be at least 100 paise." });
+  const { items, currency, receipt } = req.body;
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: "Invalid request payload. Items are required." });
   }
 
-  try {
-    const options = {
-      amount: parseInt(amount, 10), // in paise
-      currency: currency || "INR",
-      receipt: receipt || `receipt_${Date.now()}`
-    };
+  const productIds = items.map(item => parseInt(item.productId, 10)).filter(Boolean);
+  if (productIds.length === 0) {
+    return res.status(400).json({ error: "Invalid product IDs in items list." });
+  }
 
-    const order = await razorpay.orders.create(options);
-    res.json({
-      order_id: order.id,
-      amount: order.amount,
-      currency: order.currency
+  const placeholders = productIds.map(() => "?").join(",");
+  db.all(`SELECT id, base_price, discount_price, stock, archived, name FROM products WHERE id IN (${placeholders})`, productIds, async (err, dbProducts) => {
+    if (err) {
+      console.error("Database error fetching product details for price check:", err);
+      return res.status(500).json({ error: "Internal database verification error." });
+    }
+
+    const productMap = {};
+    (dbProducts || []).forEach(p => {
+      productMap[p.id] = p;
     });
-  } catch (err) {
-    console.error("Razorpay order creation error:", err);
-    // Include full error description if available from Razorpay
-    const errMsg = err.description || err.message || "Failed to create order.";
-    res.status(500).json({ error: `Razorpay Error: ${errMsg}` });
-  }
+
+    let computedTotalAmount = 0;
+    let stockOrArchivedError = null;
+
+    for (const item of items) {
+      const p = productMap[parseInt(item.productId, 10)];
+      if (!p) {
+        stockOrArchivedError = `Product with ID ${item.productId} was not found.`;
+        break;
+      }
+      if (p.archived) {
+        stockOrArchivedError = `${p.name} is no longer available.`;
+        break;
+      }
+      if (p.stock < item.quantity) {
+        stockOrArchivedError = `Insufficient stock for ${p.name}. Only ${p.stock} available.`;
+        break;
+      }
+
+      const activePrice = p.discount_price !== null && p.discount_price > 0 ? p.discount_price : p.base_price;
+      computedTotalAmount += activePrice * parseInt(item.quantity, 10);
+    }
+
+    if (stockOrArchivedError) {
+      return res.status(400).json({ error: stockOrArchivedError });
+    }
+
+    // Add flat shipping fee of 50
+    computedTotalAmount += 50;
+
+    const amountPaise = Math.round(computedTotalAmount * 100);
+
+    if (amountPaise < 100) {
+      return res.status(400).json({ error: "Minimum checkout amount is 1 Rupee." });
+    }
+
+    try {
+      const options = {
+        amount: amountPaise,
+        currency: currency || "INR",
+        receipt: receipt || `receipt_${Date.now()}`
+      };
+
+      const order = await razorpay.orders.create(options);
+      res.json({
+        order_id: order.id,
+        amount: order.amount,
+        currency: order.currency
+      });
+    } catch (err) {
+      console.error("Razorpay order creation error:", err);
+      res.status(500).json({ error: "Failed to create payment order." });
+    }
+  });
 });
 
 // Razorpay: Verify Payment Signature and Record Transaction
@@ -1227,129 +1396,150 @@ app.post('/api/verify-payment', (req, res) => {
     return res.status(400).json({ error: "Payment verification failed. Invalid signature." });
   }
 
-  // 2. Save order in the database (since payment was verified successfully!)
-  if (!customerName || !customerEmail || !shippingAddress || !items || items.length === 0) {
-    return res.status(400).json({ error: "Missing required customer or items fields." });
-  }
+  // Idempotency: check if this transaction has already been processed
+  db.get("SELECT order_id FROM transactions WHERE transaction_ref = ?", [razorpay_payment_id], (err, transRow) => {
+    if (err) {
+      return res.status(500).json({ error: "Database error checking duplicate transaction." });
+    }
+    if (transRow) {
+      return res.json({
+        success: true,
+        orderId: transRow.order_id,
+        transactionRef: razorpay_payment_id,
+        message: "Payment signature already verified."
+      });
+    }
 
-  db.serialize(() => {
-    db.run("BEGIN TRANSACTION");
+    if (!customerName || !customerEmail || !shippingAddress || !items || items.length === 0) {
+      return res.status(400).json({ error: "Missing required customer or items fields." });
+    }
 
-    let stockError = null;
-    let checkedItems = 0;
-    const productNamesMap = {};
+    db.serialize(() => {
+      db.run("BEGIN TRANSACTION");
 
-    items.forEach((item) => {
-      db.get("SELECT stock, name FROM products WHERE id = ?", [item.productId], (err, row) => {
-        if (err) {
-          stockError = "Database error verifying stock.";
-        } else if (!row) {
-          stockError = "Product not found.";
-        } else {
-          productNamesMap[item.productId] = row.name;
-          if (row.stock < item.quantity) {
-            stockError = `Insufficient stock for ${row.name}. Only ${row.stock} left.`;
+      let stockError = null;
+      let checkedItems = 0;
+      const productNamesMap = {};
+      const productPriceMap = {};
+
+      items.forEach((item) => {
+        db.get("SELECT stock, name, base_price, discount_price, archived FROM products WHERE id = ?", [item.productId], (err, row) => {
+          if (err) {
+            stockError = "Database error verifying stock.";
+          } else if (!row) {
+            stockError = "Product not found.";
+          } else if (row.archived) {
+            stockError = `\n${row.name} is no longer available.`;
+          } else {
+            productNamesMap[item.productId] = row.name;
+            if (row.stock < item.quantity) {
+              stockError = `Insufficient stock for ${row.name}. Only ${row.stock} left.`;
+            } else {
+              const activePrice = row.discount_price !== null && row.discount_price > 0 ? row.discount_price : row.base_price;
+              productPriceMap[item.productId] = activePrice;
+            }
           }
-        }
 
-        checkedItems++;
-        if (checkedItems === items.length) {
-          if (stockError) {
-            db.run("ROLLBACK");
-            return res.status(400).json({ error: stockError });
-          }
+          checkedItems++;
+          if (checkedItems === items.length) {
+            if (stockError) {
+              db.run("ROLLBACK");
+              return res.status(400).json({ error: stockError });
+            }
 
-          db.run(
-            `INSERT INTO orders (customer_name, customer_email, shipping_address, total_amount, status)
-             VALUES (?, ?, ?, ?, ?)`,
-            [customerName, customerEmail, shippingAddress, Number(totalAmount) || 0, 'Paid'],
-            function(err) {
-              if (err) {
-                db.run("ROLLBACK");
-                return res.status(500).json({ error: "Failed to save order." });
-              }
+            db.run(
+              `INSERT INTO orders (customer_name, customer_email, shipping_address, total_amount, status)
+               VALUES (?, ?, ?, ?, ?)`,
+              [customerName, customerEmail, shippingAddress, Number(totalAmount) || 0, 'Paid'],
+              function(err2) {
+                if (err2) {
+                  db.run("ROLLBACK");
+                  return res.status(500).json({ error: "Failed to save order." });
+                }
 
-              const orderId = this.lastID;
-              let processedItems = 0;
+                const orderId = this.lastID;
+                let processedItems = 0;
 
-              items.forEach((item) => {
-                db.run(
-                  `INSERT INTO order_items (order_id, product_id, quantity, metal, gemstone, price)
-                   VALUES (?, ?, ?, ?, ?, ?)`,
-                  [orderId, item.productId, item.quantity, item.metal, item.gemstone, Number(item.price) || 0],
-                  (err) => {
-                    if (err) {
-                      db.run("ROLLBACK");
-                      return res.status(500).json({ error: "Failed to save order items." });
-                    }
+                items.forEach((item) => {
+                  const finalPrice = productPriceMap[item.productId] || 0;
+                  db.run(
+                    `INSERT INTO order_items (order_id, product_id, quantity, metal, gemstone, price)
+                     VALUES (?, ?, ?, ?, ?, ?)`,
+                    [orderId, item.productId, item.quantity, item.metal, item.gemstone, finalPrice],
+                    (err3) => {
+                      if (err3) {
+                        db.run("ROLLBACK");
+                        return res.status(500).json({ error: "Failed to save order items." });
+                      }
 
-                    let updateStockQuery = "UPDATE products SET stock = stock - ? WHERE id = ?";
-                    let updateStockParams = [item.quantity, item.productId];
+                      let updateStockQuery = "UPDATE products SET stock = stock - ? WHERE id = ?";
+                      let updateStockParams = [item.quantity, item.productId];
 
-                    if (item.metal && item.metal.toLowerCase() === 'golden') {
-                      updateStockQuery = "UPDATE products SET stock = stock - ?, gold_stock = gold_stock - ? WHERE id = ?";
-                      updateStockParams = [item.quantity, item.quantity, item.productId];
-                    } else if (item.metal && item.metal.toLowerCase() === 'silver') {
-                      updateStockQuery = "UPDATE products SET stock = stock - ?, silver_stock = silver_stock - ? WHERE id = ?";
-                      updateStockParams = [item.quantity, item.quantity, item.productId];
-                    }
+                      if (item.metal && item.metal.toLowerCase() === 'golden') {
+                        updateStockQuery = "UPDATE products SET stock = stock - ?, gold_stock = gold_stock - ? WHERE id = ?";
+                        updateStockParams = [item.quantity, item.quantity, item.productId];
+                      } else if (item.metal && item.metal.toLowerCase() === 'silver') {
+                        updateStockQuery = "UPDATE products SET stock = stock - ?, silver_stock = silver_stock - ? WHERE id = ?";
+                        updateStockParams = [item.quantity, item.quantity, item.productId];
+                      }
 
-                    db.run(
-                      updateStockQuery,
-                      updateStockParams,
-                      (err) => {
-                        if (err) {
-                          db.run("ROLLBACK");
-                          return res.status(500).json({ error: "Failed to update stock." });
-                        }
+                      db.run(
+                        updateStockQuery,
+                        updateStockParams,
+                        (err4) => {
+                          if (err4) {
+                            db.run("ROLLBACK");
+                            return res.status(500).json({ error: "Failed to update stock." });
+                          }
 
-                        processedItems++;
-                        if (processedItems === items.length) {
-                          const transactionRef = razorpay_payment_id;
-                          const paymentMethod = "Razorpay Standard Checkout";
+                          processedItems++;
+                          if (processedItems === items.length) {
+                            const transactionRef = razorpay_payment_id;
+                            const paymentMethod = "Razorpay Standard Checkout";
 
-                          db.run(
-                            `INSERT INTO transactions (order_id, transaction_ref, amount, payment_method, status, provider)
-                             VALUES (?, ?, ?, ?, ?, ?)`,
-                            [orderId, transactionRef, totalAmount, paymentMethod, 'Success', 'Razorpay'],
-                            (err) => {
-                              if (err) {
-                                db.run("ROLLBACK");
-                                    return res.status(500).json({ error: "Failed to record transaction." });
-                              }
-
-                              db.run("COMMIT", (err) => {
-                                if (err) {
-                                  return res.status(500).json({ error: "Failed to finalize order." });
+                            db.run(
+                              `INSERT INTO transactions (order_id, transaction_ref, amount, payment_method, status, provider)
+                               VALUES (?, ?, ?, ?, ?, ?)`,
+                              [orderId, transactionRef, totalAmount, paymentMethod, 'Success', 'Razorpay'],
+                              (err5) => {
+                                if (err5) {
+                                  db.run("ROLLBACK");
+                                  return res.status(500).json({ error: "Failed to record transaction." });
                                 }
 
-                                // Send order confirmation email asynchronously
-                                sendOrderConfirmationEmail(customerName, customerEmail, orderId, totalAmount, items, productNamesMap, shippingAddress);
+                                db.run("COMMIT", (err6) => {
+                                  if (err6) {
+                                    return res.status(500).json({ error: "Failed to finalize order." });
+                                  }
 
-                                res.json({
-                                  success: true,
-                                  orderId: orderId,
-                                  transactionRef: transactionRef,
-                                  total: totalAmount,
-                                  paymentMethod: paymentMethod,
-                                  customerName: customerName,
-                                  customerEmail: customerEmail,
-                                  estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString(undefined, {
-                                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                                  })
+                                  // Send order confirmation email asynchronously
+                                  sendOrderConfirmationEmail(customerName, customerEmail, orderId, totalAmount, items, productNamesMap, shippingAddress);
+
+                                  res.json({
+                                    success: true,
+                                    orderId: orderId,
+                                    transactionRef: transactionRef,
+                                    total: totalAmount,
+                                    paymentMethod: paymentMethod,
+                                    customerName: customerName,
+                                    customerEmail: customerEmail,
+                                    estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString(undefined, {
+                                      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                                    })
+                                  });
                                 });
-                              });
-                            }
-                          );
+                              }
+                            );
+                          }
                         }
-                      }
-                    );
-                  }
-                );
-              });
-            }
-          );
-        }
+                      );
+                    }
+                  );
+                });
+              }
+            );
+          }
+        });
       });
     });
   });
@@ -1457,8 +1647,9 @@ app.get('/api/admin/db', (req, res) => {
 // 4. Admin Login Endpoint
 app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;
-  if (password && password.trim().toLowerCase() === (process.env.ADMIN_PASSWORD || 'manih2026').toLowerCase()) {
-    res.json({ success: true, token: 'manih_admin_session_token_2026' });
+  if (password && bcrypt.compareSync(password.trim(), adminPasswordHash)) {
+    const token = jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '12h' });
+    res.json({ success: true, token: token });
   } else {
     res.status(401).json({ error: 'Unauthorized. Invalid security credentials.' });
   }
@@ -1473,7 +1664,7 @@ app.post('/api/admin/clear-customers', (req, res) => {
 
   db.run("DELETE FROM customers", [], (err) => {
     if (err) {
-      return res.status(500).json({ error: "Failed to clear customers: " + err.message });
+      return res.status(500).json({ error: "Failed to clear customers." });
     }
     // Re-seed default customer
     db.run(`
@@ -1488,11 +1679,6 @@ app.post('/api/admin/clear-customers', (req, res) => {
 // Admin: Update Order Status (Mark Shipped)
 app.post('/api/admin/orders/update-status', (req, res) => {
   const { orderId, status } = req.body;
-  const authHeader = req.headers['authorization'];
-  
-  if (authHeader !== 'manih_admin_session_token_2026') {
-    return res.status(401).json({ error: "Unauthorized. Invalid admin session." });
-  }
 
   if (!orderId || !status) {
     return res.status(400).json({ error: "Missing orderId or status parameter." });
@@ -1524,6 +1710,16 @@ app.post('/api/admin/upload-image', (req, res) => {
     return res.status(400).json({ error: "No image payload received." });
   }
 
+  // Validate image MIME type (must start with data:image/)
+  if (!image.startsWith('data:image/')) {
+    return res.status(400).json({ error: "Invalid upload type. Only images are permitted." });
+  }
+
+  // Validate upload size limit (approx 5MB max base64 size)
+  if (image.length * 0.75 > 5 * 1024 * 1024) {
+    return res.status(400).json({ error: "File size exceeds the 5MB security limit." });
+  }
+
   cloudinary.uploader.upload(image, {
     folder: 'manih_jewelz_products'
   }, (err, result) => {
@@ -1536,7 +1732,7 @@ app.post('/api/admin/upload-image', (req, res) => {
 });
 
 // 5. Admin Add Product
-app.post('/api/products', (req, res) => {
+app.post('/api/products', authenticateAdmin, (req, res) => {
   const { name, category, base_price, discount_price, description, images, specs, stock, metal_options, gold_stock, silver_stock } = req.body;
   if (!name || !category || !base_price || !description || !images || !specs || stock === undefined) {
     return res.status(400).json({ error: "All product details must be completed." });
@@ -1582,7 +1778,7 @@ app.post('/api/products', (req, res) => {
       parseInt(silver_stock || 0),
       function(err2) {
         if (err2) {
-          return res.status(500).json({ error: "Failed to add product: " + err2.message });
+          return res.status(500).json({ error: "Failed to add product." });
         }
         res.json({ success: true, id: this.lastID, product_code: code });
       }
@@ -1592,7 +1788,7 @@ app.post('/api/products', (req, res) => {
 });
 
 // 6. Admin Edit Product
-app.put('/api/products/:id', (req, res) => {
+app.put('/api/products/:id', authenticateAdmin, (req, res) => {
   const { id } = req.params;
   const { name, category, base_price, discount_price, description, images, specs, stock, metal_options, gold_stock, silver_stock } = req.body;
   if (!name || !category || !base_price || !description || !images || !specs || stock === undefined) {
@@ -1622,7 +1818,7 @@ app.put('/api/products/:id', (req, res) => {
     ],
     function(err) {
       if (err) {
-        return res.status(500).json({ error: "Failed to update product: " + err.message });
+        return res.status(500).json({ error: "Failed to update product." });
       }
       if (this.changes === 0) {
         return res.status(404).json({ error: "Product not found." });
@@ -1633,7 +1829,7 @@ app.put('/api/products/:id', (req, res) => {
 });
 
 // 7. Admin Delete Product (with foreign key protection / soft-delete backup)
-app.delete('/api/products/:id', (req, res) => {
+app.delete('/api/products/:id', authenticateAdmin, (req, res) => {
   const { id } = req.params;
   const productId = parseInt(id, 10);
 
@@ -1655,7 +1851,7 @@ app.delete('/api/products/:id', (req, res) => {
       // Product has no orders - safe to delete physically
       db.run("DELETE FROM products WHERE id = ?", [productId], function(err2) {
         if (err2) {
-          return res.status(500).json({ error: "Failed to delete product: " + err2.message });
+          return res.status(500).json({ error: "Failed to delete product." });
         }
         if (this.changes === 0) {
           return res.status(404).json({ error: "Product not found." });
@@ -1904,26 +2100,35 @@ app.post('/api/customer/signup', async (req, res) => {
       return res.status(400).json({ error: "Email address is already registered." });
     }
 
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
     // Insert new customer
     const stmt = db.prepare(`
       INSERT INTO customers (name, email, password, phone)
       VALUES (?, ?, ?, ?)
     `);
     
-    stmt.run(name.trim(), email.toLowerCase().trim(), password, phone ? phone.trim() : '', function(err) {
+    stmt.run(name.trim(), email.toLowerCase().trim(), hashedPassword, phone ? phone.trim() : '', function(err) {
       if (err) {
-        return res.status(500).json({ error: "Failed to register customer: " + err.message });
+        return res.status(500).json({ error: "Failed to register customer." });
       }
 
       // Trigger Welcome Email asynchronously (don't block response)
       sendWelcomeEmail(name.trim(), email.toLowerCase().trim());
+
+      const token = jwt.sign(
+        { id: this.lastID, email: email.toLowerCase().trim(), name: name.trim() },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      );
 
       res.json({
         success: true,
         id: this.lastID,
         name: name.trim(),
         email: email.toLowerCase().trim(),
-        phone: phone ? phone.trim() : ''
+        phone: phone ? phone.trim() : '',
+        token: token
       });
     });
     stmt.finalize();
@@ -1938,20 +2143,28 @@ app.post('/api/customer/login', (req, res) => {
   }
 
   db.get(
-    "SELECT name, email, phone FROM customers WHERE LOWER(email) = ? AND password = ?",
-    [email.toLowerCase().trim(), password],
+    "SELECT id, name, email, password, phone FROM customers WHERE LOWER(email) = ?",
+    [email.toLowerCase().trim()],
     (err, row) => {
       if (err) {
         return res.status(500).json({ error: "Database error during login." });
       }
-      if (!row) {
+      if (!row || !bcrypt.compareSync(password, row.password)) {
         return res.status(401).json({ error: "Invalid email or password." });
       }
+
+      const token = jwt.sign(
+        { id: row.id, email: row.email, name: row.name },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
       res.json({
         success: true,
         name: row.name,
         email: row.email,
-        phone: row.phone
+        phone: row.phone,
+        token: token
       });
     }
   );
@@ -1965,33 +2178,47 @@ app.post('/api/customer/google-auth', (req, res) => {
   }
 
   const cleanEmail = email.toLowerCase().trim();
-  db.get("SELECT name, email, phone FROM customers WHERE LOWER(email) = ?", [cleanEmail], (err, row) => {
+  db.get("SELECT id, name, email, phone FROM customers WHERE LOWER(email) = ?", [cleanEmail], (err, row) => {
     if (err) {
-      return res.status(500).json({ error: "Database check error: " + err.message });
+      return res.status(500).json({ error: "Database check error." });
     }
 
     if (row) {
-      // User exists, log them in
+      const token = jwt.sign(
+        { id: row.id, email: row.email, name: row.name },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      );
       return res.json({
         success: true,
         name: row.name,
         email: row.email,
-        phone: row.phone
+        phone: row.phone,
+        token: token
       });
     } else {
       // User does not exist, auto-register them
       const randomPassword = 'google_oauth_' + Math.random().toString(36).substr(2, 9);
+      const hashedPassword = bcrypt.hashSync(randomPassword, 10);
       const stmt = db.prepare("INSERT INTO customers (name, email, password, phone) VALUES (?, ?, ?, ?)");
-      stmt.run(name.trim(), cleanEmail, randomPassword, '', function(err2) {
+      stmt.run(name.trim(), cleanEmail, hashedPassword, '', function(err2) {
         if (err2) {
-          return res.status(500).json({ error: "Failed to register Google user: " + err2.message });
+          return res.status(500).json({ error: "Failed to register Google user." });
         }
         sendWelcomeEmail(name.trim(), cleanEmail);
+        
+        const token = jwt.sign(
+          { id: this.lastID, email: cleanEmail, name: name.trim() },
+          JWT_SECRET,
+          { expiresIn: '7d' }
+        );
+        
         res.json({
           success: true,
           name: name.trim(),
           email: cleanEmail,
-          phone: ''
+          phone: '',
+          token: token
         });
       });
       stmt.finalize();
@@ -2085,7 +2312,8 @@ app.post('/api/customer/reset-password', (req, res) => {
     }
 
     const email = row.email;
-    db.run("UPDATE customers SET password = ? WHERE LOWER(email) = ?", [password, email.toLowerCase()], (err2) => {
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    db.run("UPDATE customers SET password = ? WHERE LOWER(email) = ?", [hashedPassword, email.toLowerCase()], (err2) => {
       if (err2) {
         return res.status(500).json({ error: "Failed to update password." });
       }
@@ -2094,6 +2322,260 @@ app.post('/api/customer/reset-password', (req, res) => {
       res.json({ success: true, message: "Your password has been successfully updated." });
     });
   });
+});
+
+// 24. Secure Customer Order History Log
+app.get('/api/customer/orders', authenticateCustomer, (req, res) => {
+  const customerEmail = req.user.email;
+  db.all(
+    "SELECT * FROM orders WHERE LOWER(customer_email) = ? ORDER BY id DESC",
+    [customerEmail.toLowerCase().trim()],
+    (err, ordersRows) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to retrieve orders." });
+      }
+
+      if (!ordersRows || ordersRows.length === 0) {
+        return res.json({ orders: [] });
+      }
+
+      const orderIds = ordersRows.map(o => o.id);
+      const placeholders = orderIds.map(() => "?").join(",");
+      db.all(
+        `SELECT oi.*, p.name AS product_name, p.images AS product_images 
+         FROM order_items oi 
+         LEFT JOIN products p ON oi.product_id = p.id 
+         WHERE oi.order_id IN (${placeholders})`,
+        orderIds,
+        (err2, itemsRows) => {
+          if (err2) {
+            return res.status(500).json({ error: "Failed to retrieve order items." });
+          }
+
+          const itemsMap = {};
+          (itemsRows || []).forEach(item => {
+            if (!itemsMap[item.order_id]) {
+              itemsMap[item.order_id] = [];
+            }
+            let firstImg = 'assets/logo.png';
+            try {
+              if (item.product_images) {
+                const parsed = JSON.parse(item.product_images);
+                if (Array.isArray(parsed) && parsed.length > 0) firstImg = parsed[0];
+              }
+            } catch (e) {}
+
+            itemsMap[item.order_id].push({
+              id: item.id,
+              product_id: item.product_id,
+              productName: item.product_name || 'Premium Piece',
+              image: firstImg,
+              quantity: item.quantity,
+              metal: item.metal,
+              gemstone: item.gemstone,
+              price: item.price
+            });
+          });
+
+          const enrichedOrders = ordersRows.map(o => ({
+            ...o,
+            items: itemsMap[o.id] || []
+          }));
+
+          res.json({ orders: enrichedOrders });
+        }
+      );
+    }
+  );
+});
+
+// 25. Secure Guest Track Order Status
+app.post('/api/orders/track', (req, res) => {
+  const { email, orderId } = req.body;
+  if (!email || !orderId) {
+    return res.status(400).json({ error: "Email and Order ID are required." });
+  }
+
+  db.get(
+    "SELECT * FROM orders WHERE id = ? AND LOWER(customer_email) = ?",
+    [parseInt(orderId, 10), email.toLowerCase().trim()],
+    (err, orderRow) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to retrieve order." });
+      }
+      if (!orderRow) {
+        return res.status(404).json({ error: "No matching order found." });
+      }
+
+      db.all(
+        `SELECT oi.*, p.name AS product_name, p.images AS product_images 
+         FROM order_items oi 
+         LEFT JOIN products p ON oi.product_id = p.id 
+         WHERE oi.order_id = ?`,
+        [orderRow.id],
+        (err2, itemsRows) => {
+          if (err2) {
+            return res.status(500).json({ error: "Failed to retrieve order details." });
+          }
+
+          const items = (itemsRows || []).map(item => {
+            let firstImg = 'assets/logo.png';
+            try {
+              if (item.product_images) {
+                const parsed = JSON.parse(item.product_images);
+                if (Array.isArray(parsed) && parsed.length > 0) firstImg = parsed[0];
+              }
+            } catch (e) {}
+            return {
+              id: item.id,
+              product_id: item.product_id,
+              productName: item.product_name || 'Premium Piece',
+              image: firstImg,
+              quantity: item.quantity,
+              metal: item.metal,
+              gemstone: item.gemstone,
+              price: item.price
+            };
+          });
+
+          res.json({
+            id: orderRow.id,
+            status: orderRow.status,
+            total_amount: orderRow.total_amount,
+            shipping_address: orderRow.shipping_address,
+            items: items
+          });
+        }
+      );
+    }
+  );
+});
+
+// 24. Secure Customer Order History Log
+app.get('/api/customer/orders', authenticateCustomer, (req, res) => {
+  const customerEmail = req.user.email;
+  db.all(
+    "SELECT * FROM orders WHERE LOWER(customer_email) = ? ORDER BY id DESC",
+    [customerEmail.toLowerCase().trim()],
+    (err, ordersRows) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to retrieve orders." });
+      }
+
+      if (!ordersRows || ordersRows.length === 0) {
+        return res.json({ orders: [] });
+      }
+
+      const orderIds = ordersRows.map(o => o.id);
+      const placeholders = orderIds.map(() => "?").join(",");
+      db.all(
+        `SELECT oi.*, p.name AS product_name, p.images AS product_images 
+         FROM order_items oi 
+         LEFT JOIN products p ON oi.product_id = p.id 
+         WHERE oi.order_id IN (${placeholders})`,
+        orderIds,
+        (err2, itemsRows) => {
+          if (err2) {
+            return res.status(500).json({ error: "Failed to retrieve order items." });
+          }
+
+          const itemsMap = {};
+          (itemsRows || []).forEach(item => {
+            if (!itemsMap[item.order_id]) {
+              itemsMap[item.order_id] = [];
+            }
+            let firstImg = 'assets/logo.png';
+            try {
+              if (item.product_images) {
+                const parsed = JSON.parse(item.product_images);
+                if (Array.isArray(parsed) && parsed.length > 0) firstImg = parsed[0];
+              }
+            } catch (e) {}
+
+            itemsMap[item.order_id].push({
+              id: item.id,
+              product_id: item.product_id,
+              productName: item.product_name || 'Premium Piece',
+              image: firstImg,
+              quantity: item.quantity,
+              metal: item.metal,
+              gemstone: item.gemstone,
+              price: item.price
+            });
+          });
+
+          const enrichedOrders = ordersRows.map(o => ({
+            ...o,
+            items: itemsMap[o.id] || []
+          }));
+
+          res.json({ orders: enrichedOrders });
+        }
+      );
+    }
+  );
+});
+
+// 25. Secure Guest Track Order Status
+app.post('/api/orders/track', (req, res) => {
+  const { email, orderId } = req.body;
+  if (!email || !orderId) {
+    return res.status(400).json({ error: "Email and Order ID are required." });
+  }
+
+  db.get(
+    "SELECT * FROM orders WHERE id = ? AND LOWER(customer_email) = ?",
+    [parseInt(orderId, 10), email.toLowerCase().trim()],
+    (err, orderRow) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to retrieve order." });
+      }
+      if (!orderRow) {
+        return res.status(404).json({ error: "No matching order found." });
+      }
+
+      db.all(
+        `SELECT oi.*, p.name AS product_name, p.images AS product_images 
+         FROM order_items oi 
+         LEFT JOIN products p ON oi.product_id = p.id 
+         WHERE oi.order_id = ?`,
+        [orderRow.id],
+        (err2, itemsRows) => {
+          if (err2) {
+            return res.status(500).json({ error: "Failed to retrieve order details." });
+          }
+
+          const items = (itemsRows || []).map(item => {
+            let firstImg = 'assets/logo.png';
+            try {
+              if (item.product_images) {
+                const parsed = JSON.parse(item.product_images);
+                if (Array.isArray(parsed) && parsed.length > 0) firstImg = parsed[0];
+              }
+            } catch (e) {}
+            return {
+              id: item.id,
+              product_id: item.product_id,
+              productName: item.product_name || 'Premium Piece',
+              image: firstImg,
+              quantity: item.quantity,
+              metal: item.metal,
+              gemstone: item.gemstone,
+              price: item.price
+            };
+          });
+
+          res.json({
+            id: orderRow.id,
+            status: orderRow.status,
+            total_amount: orderRow.total_amount,
+            shipping_address: orderRow.shipping_address,
+            items: items
+          });
+        }
+      );
+    }
+  );
 });
 
 // Health check endpoint for uptime monitors / keep-awake pings

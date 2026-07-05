@@ -4,6 +4,16 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const API_BASE = (window.location.protocol === 'file:') ? 'http://localhost:3000' : '';
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
   
   window.handleGoogleCredentialResponse = async (response) => {
     try {
@@ -29,6 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       localStorage.setItem('manih_customer_email', data.email);
       localStorage.setItem('manih_customer_name', data.name);
+      if (data.token) {
+        localStorage.setItem('manih_customer_token', data.token);
+      }
       
       checkUserLoginSession();
       const userDrawer = document.getElementById('user-drawer');
@@ -682,12 +695,16 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       try {
-        const response = await fetch('/api/admin/db');
+        const customerToken = localStorage.getItem('manih_customer_token');
+        const response = await fetch('/api/customer/orders', {
+          headers: {
+            'Authorization': `Bearer ${customerToken || ''}`
+          }
+        });
         if (!response.ok) throw new Error('Failed to retrieve order history.');
         const data = await response.json();
         
-        // Filter orders placed under this customer email
-        const userOrders = data.orders.filter(o => o.customer_email.toLowerCase().trim() === savedEmail.toLowerCase().trim());
+        const userOrders = data.orders || [];
         
         if (userOrders.length === 0) {
           userWelcomeName.textContent = `Hi, ${displayName}`;
@@ -792,17 +809,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!configRes.ok) throw new Error("Failed to fetch payment configuration.");
       const { razorpayKeyId } = await configRes.json();
 
-      // 2. Create Razorpay order on backend (amount in paise, minimum 100 paise)
-      const amountPaise = Math.round(totalAmount * 100);
-      if (amountPaise < 100) {
-        throw new Error("Minimum checkout amount is 1 Rupee.");
-      }
+      // 2. Create Razorpay order on backend using backend calculated price
+      const cartItemsPayload = cart.map(item => ({
+        productId: item.id,
+        quantity: item.quantity
+      }));
 
       const orderRes = await fetch(`${API_BASE}/api/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: amountPaise,
+          items: cartItemsPayload,
           currency: 'INR',
           receipt: `receipt_${Date.now()}`
         })
@@ -1074,18 +1091,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-          const response = await fetch('/api/admin/db');
-          if (!response.ok) throw new Error("Failed to search orders database.");
-          const data = await response.json();
-
-          const matchingOrder = data.orders.find(o => 
-            String(o.id) === orderIdVal && 
-            o.customer_email.toLowerCase().trim() === emailVal
-          );
-
-          if (!matchingOrder) {
-            throw new Error("No matching order found for this email and reference.");
+          const response = await fetch('/api/orders/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: emailVal, orderId: orderIdVal })
+          });
+          if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error || "No matching order found for this email and reference.");
           }
+          const matchingOrder = await response.json();
 
           if (trackResultsContainer) {
             const itemsHtml = matchingOrder.items.map(item => `
@@ -1093,7 +1108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="display:flex; align-items:center; gap:0.5rem;">
                   <img src="${item.image || 'assets/logo.png'}" style="width:30px; height:30px; object-fit:cover; border-radius:4px; border:1px solid var(--border-rose);">
                   <div style="text-align: left;">
-                    <span style="font-weight:600; color:var(--text-primary);">${item.productName}</span><br>
+                    <span style="font-weight:600; color:var(--text-primary);">${escapeHtml(item.productName)}</span><br>
                     <small style="color:var(--text-muted);">${item.metal !== 'none' ? item.metal : ''}</small>
                   </div>
                 </div>
@@ -1116,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div style="margin-top:0.8rem; font-size:0.65rem; color:var(--text-muted); line-height:1.4; text-align: left;">
                   <strong>Shipping Address:</strong><br>
-                  ${matchingOrder.shipping_address.replace(/, PIN:/g, '<br>PIN:').replace(/, Phone:/g, '<br>Phone:')}
+                  ${escapeHtml(matchingOrder.shipping_address).replace(/, PIN:/g, '<br>PIN:').replace(/, Phone:/g, '<br>Phone:')}
                 </div>
               </div>
             `;
@@ -1191,6 +1206,9 @@ document.addEventListener('DOMContentLoaded', () => {
           if (response.ok) {
             localStorage.setItem('manih_customer_email', data.email);
             localStorage.setItem('manih_customer_name', data.name);
+            if (data.token) {
+              localStorage.setItem('manih_customer_token', data.token);
+            }
             checkUserLoginSession();
             if (userDrawer) userDrawer.classList.remove('active');
           } else {
@@ -1236,6 +1254,9 @@ document.addEventListener('DOMContentLoaded', () => {
           if (response.ok) {
             localStorage.setItem('manih_customer_email', data.email);
             localStorage.setItem('manih_customer_name', data.name);
+            if (data.token) {
+              localStorage.setItem('manih_customer_token', data.token);
+            }
             
             // Reset signup form
             userSignupForm.reset();
@@ -1267,6 +1288,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // User Account Logout
     if (userLogoutBtn) {
       userLogoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('manih_customer_token');
         localStorage.removeItem('manih_customer_email');
         localStorage.removeItem('manih_customer_name');
         
@@ -1748,10 +1770,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="review-stars">
                 ${starsHtml}
               </div>
-              <p class="review-text">"${r.review_text}"</p>
+              <p class="review-text">"${escapeHtml(r.review_text)}"</p>
               <div class="review-author">
-                <span class="author-name">${r.author_name}</span>
-                <span class="author-location">${r.author_location || 'Verified Buyer'}</span>
+                <span class="author-name">${escapeHtml(r.author_name)}</span>
+                <span class="author-location">${escapeHtml(r.author_location) || 'Verified Buyer'}</span>
               </div>
             </div>
           `;
