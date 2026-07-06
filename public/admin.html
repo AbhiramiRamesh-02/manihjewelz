@@ -1217,6 +1217,31 @@
 
       let sessionToken = adminStorage.getItem('manih_admin_token') || '';
 
+      // Globally intercept fetch to attach admin session token to all API calls
+      const originalFetch = window.fetch;
+      window.fetch = async function (url, options = {}) {
+        const isApiRoute = String(url).includes('/api/');
+        if (isApiRoute) {
+          if (options.headers instanceof Headers) {
+            if (!options.headers.has('Authorization') && !options.headers.has('authorization')) {
+              const token = adminStorage.getItem('manih_admin_token') || sessionToken;
+              if (token) {
+                options.headers.append('Authorization', token);
+              }
+            }
+          } else {
+            options.headers = options.headers || {};
+            if (!options.headers['Authorization'] && !options.headers['authorization']) {
+              const token = adminStorage.getItem('manih_admin_token') || sessionToken;
+              if (token) {
+                options.headers['Authorization'] = token;
+              }
+            }
+          }
+        }
+        return originalFetch(url, options);
+      };
+
       // Check if already authenticated
       if (sessionToken) {
         showDashboard();
