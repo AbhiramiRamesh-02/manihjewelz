@@ -28,7 +28,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET || 'YOUR_CLOUDINARY_API_SECRET'
 });
 
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
+const JWT_SECRET = process.env.JWT_SECRET || 'manih_jewelz_secure_jwt_secret_2026';
 const adminPasswordHash = bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'manih2026', 10);
 
 function authenticateAdmin(req, res, next) {
