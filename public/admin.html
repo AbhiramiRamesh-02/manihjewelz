@@ -1331,8 +1331,8 @@
       function calculateAnalytics() {
         // Calculate Revenue
         const totalRevenue = orders
-          .filter(o => o.status === 'Paid')
-          .reduce((sum, o) => sum + o.total_amount, 0);
+          .filter(o => ['Paid', 'Shipped', 'Delivered'].includes(o.status))
+          .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
         
         document.getElementById('stat-revenue').textContent = `RS ${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         document.getElementById('stat-orders').textContent = orders.length;
