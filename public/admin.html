@@ -640,6 +640,13 @@
       </div>
       <div class="overview-card">
         <div class="overview-info">
+          <h4>Delivery Charges</h4>
+          <p id="stat-delivery">RS 0.00</p>
+        </div>
+        <i class="fa-solid fa-truck overview-icon"></i>
+      </div>
+      <div class="overview-card">
+        <div class="overview-info">
           <h4>Completed Orders</h4>
           <p id="stat-orders">0</p>
         </div>
@@ -1327,19 +1334,22 @@
           logoutBtn.style.display = 'none';
         }
       }
-
       function calculateAnalytics() {
-        // Calculate Revenue
-        const totalRevenue = orders
-          .filter(o => ['Paid', 'Shipped', 'Delivered'].includes(o.status))
-          .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+        // Calculate Completed Orders
+        const completedOrders = orders.filter(o => ['Paid', 'Shipped', 'Delivered'].includes(o.status));
+        
+        // Calculate Delivery Charges (Rs 50 flat per completed order)
+        const totalDelivery = completedOrders.length * 50;
+        
+        // Calculate Net Revenue (Gross total amount minus delivery charges)
+        const totalRevenue = completedOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0) - totalDelivery;
         
         document.getElementById('stat-revenue').textContent = `RS ${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('stat-delivery').textContent = `RS ${totalDelivery.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         document.getElementById('stat-orders').textContent = orders.length;
         document.getElementById('stat-products').textContent = products.length;
         document.getElementById('stat-transactions').textContent = transactions.length;
       }
-
       // --------------------------------------------------------------------------
       // 3. Render Tables
       // --------------------------------------------------------------------------
