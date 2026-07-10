@@ -80,21 +80,9 @@ const corsOptions = {
   credentials: true
 };
 
-// Setup Helmet with custom Content Security Policy
+// Setup Helmet with custom security headers
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://checkout.razorpay.com", "https://accounts.google.com/gsi/client", "https://apis.google.com", "https://ssl.gstatic.com", "https://cdnjs.cloudflare.com"],
-      frameSrc: ["'self'", "https://checkout.razorpay.com", "https://api.razorpay.com", "https://accounts.google.com"],
-      connectSrc: ["'self'", "https://api.razorpay.com", "https://accounts.google.com", "https://*.googleapis.com", "https://res.cloudinary.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://lh3.googleusercontent.com"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: []
-    }
-  },
+  contentSecurityPolicy: false, // Disabled to prevent blocking Google Sign-In dynamic scripts/popups
   crossOriginEmbedderPolicy: false,
   crossOriginResourcePolicy: false,
   crossOriginOpenerPolicy: false // Allows Google Sign-in OAuth popup callback communication
