@@ -810,10 +810,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const { razorpayKeyId } = await configRes.json();
 
       // 2. Create Razorpay order on backend using backend calculated price
-      const cartItemsPayload = cart.map(item => ({
-        productId: item.productId,
-        quantity: item.quantity
-      }));
 
       const orderRes = await fetch(`${API_BASE}/api/create-order`, {
         method: 'POST',

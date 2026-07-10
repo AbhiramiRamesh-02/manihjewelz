@@ -912,6 +912,7 @@ async function sendOrderConfirmationEmail(customerName, customerEmail, orderId, 
         <div class="content">
           <h2>Hi ${customerName},</h2>
           <p>Thank you for shopping with <strong>Manih Jewelz</strong>! Your payment was verified successfully and your order is confirmed.</p>
+          <p><strong>Tracking Your Order:</strong> You can track your order at any time using your Order ID (<strong>#000${orderId}</strong>) and your email address (<strong>${customerEmail}</strong>). Simply visit the login/account section on our website and choose the <strong>Track Your Order</strong> option.</p>
           <p>We are currently preparing your jewelry pieces for shipment. Below are your order details:</p>
           
           <div style="margin: 15px 0; font-size: 14px;">
