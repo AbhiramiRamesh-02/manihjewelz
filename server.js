@@ -85,18 +85,19 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://checkout.razorpay.com", "https://accounts.google.com/gsi/client", "https://cdnjs.cloudflare.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://checkout.razorpay.com", "https://accounts.google.com/gsi/client", "https://apis.google.com", "https://ssl.gstatic.com", "https://cdnjs.cloudflare.com"],
       frameSrc: ["'self'", "https://checkout.razorpay.com", "https://api.razorpay.com", "https://accounts.google.com"],
-      connectSrc: ["'self'", "https://api.razorpay.com", "https://accounts.google.com", "https://res.cloudinary.com"],
+      connectSrc: ["'self'", "https://api.razorpay.com", "https://accounts.google.com", "https://*.googleapis.com", "https://res.cloudinary.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-      imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://lh3.googleusercontent.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: []
     }
   },
   crossOriginEmbedderPolicy: false,
-  crossOriginResourcePolicy: false
+  crossOriginResourcePolicy: false,
+  crossOriginOpenerPolicy: false // Allows Google Sign-in OAuth popup callback communication
 }));
 
 // Setup Rate Limiters
