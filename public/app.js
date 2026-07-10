@@ -811,7 +811,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // 2. Create Razorpay order on backend using backend calculated price
       const cartItemsPayload = cart.map(item => ({
-        productId: item.id,
+        productId: item.productId,
         quantity: item.quantity
       }));
 

@@ -102,19 +102,19 @@ app.use(helmet({
 // Setup Rate Limiters
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 5000, // Relaxed for local and live testing
   message: { error: "Too many requests. Please try again later." }
 });
 
 const authLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  max: 10,
+  max: 500, // Relaxed for local and live testing
   message: { error: "Too many authentication attempts. Please try again in 10 minutes." }
 });
 
 const paymentLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  max: 10,
+  max: 500, // Relaxed for local and live testing
   message: { error: "Too many payment initialization requests. Please try again in 10 minutes." }
 });
 
