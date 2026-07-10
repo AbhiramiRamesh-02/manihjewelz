@@ -1190,9 +1190,9 @@ app.post('/api/checkout', (req, res) => {
             }
 
             db.run(
-              `INSERT INTO orders (customer_name, customer_email, shipping_address, total_amount, status)
-               VALUES (?, ?, ?, ?, ?)`,
-              [customerName, customerEmail, shippingAddress, totalAmount, 'Paid'],
+              `INSERT INTO orders (customer_name, customer_email, shipping_address, total_amount, status, created_at)
+               VALUES (?, ?, ?, ?, ?, ?)`,
+              [customerName, customerEmail, shippingAddress, totalAmount, 'Paid', new Date().toISOString()],
               function(err) {
                 if (err) {
                   db.run("ROLLBACK");
@@ -1449,9 +1449,9 @@ app.post('/api/verify-payment', (req, res) => {
             }
 
             db.run(
-              `INSERT INTO orders (customer_name, customer_email, shipping_address, total_amount, status)
-               VALUES (?, ?, ?, ?, ?)`,
-              [customerName, customerEmail, shippingAddress, Number(totalAmount) || 0, 'Paid'],
+              `INSERT INTO orders (customer_name, customer_email, shipping_address, total_amount, status, created_at)
+               VALUES (?, ?, ?, ?, ?, ?)`,
+              [customerName, customerEmail, shippingAddress, Number(totalAmount) || 0, 'Paid', new Date().toISOString()],
               function(err2) {
                 if (err2) {
                   db.run("ROLLBACK");

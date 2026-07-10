@@ -1441,7 +1441,7 @@
               <td><span style="font-size:0.75rem; color:#555;" title="${o.shipping_address}">${o.shipping_address}</span></td>
               <td><strong>RS ${o.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></td>
               <td><span class="tag tag-${o.status.toLowerCase()}">${o.status}</span></td>
-              <td style="color:#666; font-size:0.75rem;">${new Date(o.created_at).toLocaleString()}</td>
+              <td style="color:#666; font-size:0.75rem;">${new Date(o.created_at.includes('T') || o.created_at.includes('Z') ? o.created_at : o.created_at + ' UTC').toLocaleString()}</td>
               <td>${actionBtnHTML}</td>
             </tr>
           `;

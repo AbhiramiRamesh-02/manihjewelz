@@ -730,7 +730,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span style="color: var(--bg-maroon);">₹${o.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
               <div style="font-size: 0.7rem; color: var(--text-muted);">
-                Placed: ${new Date(o.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                Placed: ${new Date(o.created_at.includes('T') || o.created_at.includes('Z') ? o.created_at : o.created_at + ' UTC').toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
               </div>
             </div>
           `).join('');
@@ -2687,7 +2687,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td><div class="db-json-text" title="${o.shipping_address}">${o.shipping_address}</div></td>
             <td>₹${o.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
             <td><span class="status-${o.status.toLowerCase()}">${o.status}</span></td>
-            <td style="color:#888">${new Date(o.created_at).toLocaleString()}</td>
+            <td style="color:#888">${new Date(o.created_at.includes('T') || o.created_at.includes('Z') ? o.created_at : o.created_at + ' UTC').toLocaleString()}</td>
           </tr>
         `).join('');
       }
@@ -2711,7 +2711,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${t.payment_method}</td>
             <td><span class="status-${t.status.toLowerCase()}">${t.status}</span></td>
             <td>${t.provider}</td>
-            <td style="color:#888">${new Date(t.created_at).toLocaleString()}</td>
+            <td style="color:#888">${new Date(t.created_at.includes('T') || t.created_at.includes('Z') ? t.created_at : t.created_at + ' UTC').toLocaleString()}</td>
           </tr>
         `).join('');
       }
