@@ -2,6 +2,49 @@
    Manih Jewelz - Premium Client-Side Storefront Engine
    ========================================================================== */
 
+// Define global Google credential response handler immediately to prevent race conditions with Google Identity SDK
+window.handleGoogleCredentialResponse = async (response) => {
+  try {
+    console.log("Google Sign-In credential response received:", response);
+    const token = response.credential;
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    const payload = JSON.parse(jsonPayload);
+    const name = payload.name;
+    const email = payload.email;
+
+    const API_BASE = (window.location.protocol === 'file:') ? 'http://localhost:3000' : '';
+    const res = await fetch(`${API_BASE}/api/customer/google-auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Google authentication failed.");
+
+    localStorage.setItem('manih_customer_email', data.email);
+    localStorage.setItem('manih_customer_name', data.name);
+    if (data.token) {
+      localStorage.setItem('manih_customer_token', data.token);
+    }
+    
+    // Invoke session update if available
+    if (typeof window.checkUserLoginSession === 'function') {
+      window.checkUserLoginSession();
+    }
+    const userDrawer = document.getElementById('user-drawer');
+    if (userDrawer) userDrawer.classList.remove('active');
+  } catch (err) {
+    console.error("Google login failure:", err);
+    alert("Google Sign-In failed: " + err.message);
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   const API_BASE = (window.location.protocol === 'file:') ? 'http://localhost:3000' : '';
 
@@ -15,42 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/'/g, '&#39;');
   }
   
-  window.handleGoogleCredentialResponse = async (response) => {
-    try {
-      const token = response.credential;
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-
-      const payload = JSON.parse(jsonPayload);
-      const name = payload.name;
-      const email = payload.email;
-
-      const res = await fetch(`${API_BASE}/api/customer/google-auth`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name })
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Google authentication failed.");
-
-      localStorage.setItem('manih_customer_email', data.email);
-      localStorage.setItem('manih_customer_name', data.name);
-      if (data.token) {
-        localStorage.setItem('manih_customer_token', data.token);
-      }
-      
-      checkUserLoginSession();
-      const userDrawer = document.getElementById('user-drawer');
-      if (userDrawer) userDrawer.classList.remove('active');
-    } catch (err) {
-      console.error("Google login failure:", err);
-      alert("Google Sign-In failed: " + err.message);
-    }
-  };
+  // Google credential response was moved to the top of the file to prevent GSI client SDK race conditions.
   
   // Global drawer state listener to lock/unlock background page scrolling
   window.addEventListener('click', () => {
@@ -754,6 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+  window.checkUserLoginSession = checkUserLoginSession;
 
   // --------------------------------------------------------------------------
   // 7. Checkout & Payment Simulation
