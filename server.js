@@ -72,7 +72,7 @@ const corsOptions = {
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     const originUrl = new URL(origin);
-    if (originUrl.hostname === 'localhost' || originUrl.hostname === '127.0.0.1' || originUrl.hostname.endsWith('.onrender.com')) {
+    if (originUrl.hostname === 'localhost' || originUrl.hostname === '127.0.0.1' || originUrl.hostname.endsWith('.onrender.com') || originUrl.hostname.includes('manihjewelz')) {
       return callback(null, true);
     }
     callback(new Error('Not allowed by CORS'));
