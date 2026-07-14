@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 // Initialize Razorpay SDK
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || 'YOUR_RAZORPAY_KEY_ID',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'YOUR_RAZORPAY_KEY_SECRET'
+  key_secret: process.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_SECRET_KEY || 'YOUR_RAZORPAY_KEY_SECRET'
 });
 
 // Initialize Cloudinary SDK
@@ -1378,7 +1378,8 @@ app.post('/api/verify-payment', (req, res) => {
   }
 
   // 1. Verify Signature using HMAC-SHA256
-  const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || 'YOUR_RAZORPAY_KEY_SECRET');
+  const razorpaySecret = process.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_SECRET_KEY || 'YOUR_RAZORPAY_KEY_SECRET';
+  const hmac = crypto.createHmac('sha256', razorpaySecret);
   hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
   const generatedSignature = hmac.digest('hex');
 
